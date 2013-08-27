@@ -1,0 +1,42 @@
+<div class="container">
+
+	<div class="header">
+        <ul class="nav nav-pills pull-right">
+			<li class="active"><a href="#">Track Time</a></li>
+			<li><a href="#">About</a></li>
+			<li><a href="#">Contact</a></li>
+        </ul>
+        <h3 class="text-muted">Angular FireTracker</h3>
+    </div>
+	<div class="row">
+		<div class="col-md-6">
+			
+			<button class="btn btn-primary" ng-if="!activeTrack.ref" ng-click="startFireTrack()">Start New FireTrack</button>
+			<div ng-if="activeTrack.ref" class="well">
+				<form name="activeTrackForm" role="form">
+				<button class="btn btn-primary" ng-disabled="activeTrackForm.trackDescription.$invalid" ng-click="stopFireTrack(trackDescription)">Stop FireTrack</button>
+				<track-ticker start="activeTrack.track.started"></track-ticker>
+				 <textarea name="trackDescription" ng-model="trackDescription" auto-grow rows="5" class="track-description" required/>
+				 <select ng-model="trackCustomer" ng-options="c.name for c in customers" required></select>
+				</form>
+			</div>
+			
+		</div>
+		<div class="col-md-6">
+			<ul class="list-group">
+				<li class="list-group-item" ng-repeat="track in tracks">
+					<span class="glyphicon glyphicon-user"></span><span> {{track.user.userName}}</span>
+					<track-duration start="{{track.started}}" end="{{track.stopped}}" ></track-duration>
+					<h4>{{track.description}}</h4>
+					
+				</li>
+			<ul>
+			
+			
+		<div>
+			
+	</div>
+	
+	
+  </div>
+</div>
