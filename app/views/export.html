@@ -1,0 +1,43 @@
+<div class="bs-docs-example">
+    <div class="btn-toolbar" style="margin: 0;">
+        <div class="btn-group">
+            <button class="btn" ng-click="exportCsv($(exportTable))">Export</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li><a href="#">XML</a></li>
+                <li><a href="#">CSV</a></li>
+            </ul>
+        </div>
+        <div class="btn-group">
+            <button class="btn dropdown-toggle" data-toggle="dropdown">Columns <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li ng-repeat="col in columns">
+                    <input type="checkbox" ng-model="col.visible">
+                    <span>{{col.name}}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <table class="table table-striped">
+        <table class="table" id="exportTable">
+            <thead>
+            <tr>
+                <th>#</th>
+                <td ng-repeat="col in visibleColumns()">
+                    {{col.name}}
+                </td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="track in tracks">
+                <td >1</td>
+                <td ng-repeat="col in visibleColumns()">
+                    {{col.getValue(track)}}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </table>
+</div>
