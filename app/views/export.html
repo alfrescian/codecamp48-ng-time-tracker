@@ -10,7 +10,7 @@
         <div class="btn-group">
             <button class="btn dropdown-toggle" data-toggle="dropdown">Columns <span class="caret"></span></button>
             <ul class="dropdown-menu">
-                <li ng-repeat="col in columns">
+                <li ng-repeat="col in taskColumns">
                     &nbsp;&nbsp;&nbsp;
                     <input type="checkbox" ng-model="col.visible" >
                     <span>{{col.name}}</span>
@@ -30,9 +30,9 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="track in tracks">
+            <tr ng-repeat="task in tasks">
                 <td ng-repeat="col in visibleColumns()">
-                    {{col.getValue(track)}}
+                    {{col.getValue(task)}}
                 </td>
             </tr>
             </tbody>
