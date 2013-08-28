@@ -31,6 +31,7 @@ angular.module('fireTimeTracker', ['ngRoute', 'firebase','ngResource'])
         redirectTo: '/time-track'
       });
   })
+    
   .run(['$rootScope', '$location', '$route', function($rootScope, $location, $route) {
     var path = function() { return $location.path(); };
     $rootScope.$watch(path, function(newVal, oldVal) {
@@ -39,7 +40,44 @@ angular.module('fireTimeTracker', ['ngRoute', 'firebase','ngResource'])
           $rootScope.activetab = pathElements[1];
         } 
        });
-   }]);  
+   }]).directive('timeClock', function( $filter, $log, $timeout, $rootScope){
+	return {
+		restrict : 'E',
+		template : '<div ng-show="displayTimer"><span class="glyphicon glyphicon-time hidden" id="timeIcon"></span> <span id="time"></div>',
+		scope: {
+	         start :'&'
+	    },
+	   link: function(scope, elm, attrs, ctrl) {
+           function safeApply(scope, fn) {
+                (scope.$$phase || scope.$root.$$phase) ? fn() : scope.$apply(fn);
+            }
+            function resetTime() {
+                safeApply(scope, function () {
+                    if ($rootScope.startTime){
+                        var date = new Date(Date.now() - $rootScope.startTime);
+                        $('#time').text(("0" + date.getUTCHours()).slice(-2) + ':' + ("0" + date.getUTCMinutes()).slice(-2) + ':' + ("0" + date.getUTCSeconds()).slice(-2));
+                        $('#timeIcon').removeClass('hidden');
+                        scope.displayTimer = true;
+                    }else{
+                        scope.displayTimer = false;
+                    }
+                });
+            }
+			$rootScope.$watch(scope.start, function(val){
+                if (val){
+                    var time = $('#time');
+                    time.hide();
+                    resetTime();
+                    time.fadeIn('slow');
+                    var resetTimeInterval = setInterval(resetTime, 1000);
+                    var invisibleInterval = setInterval(function () {
+                        $('#timeIcon').toggleClass('invisible');
+                    }, 400);
+                }
+            });
+       }
+	};
+});  
 
 /* Patch for moment JS to format durations: https://github.com/moment/moment/issues/463 */
 moment.duration.fn.format = function (input) {

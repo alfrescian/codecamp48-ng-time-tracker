@@ -58,22 +58,21 @@ angular.module('fireTimeTracker')
             },
             {
                 visible: true,
-                name: "Task Estimated Time",
+                name: "Task Est. Time",
                 getValue: function(task) {
                     return task.data.estimatedTime;
                 }
-            },
-            {
+            }
+            /*{
                 visible: true,
                 name: "Task Duration",
                 getValue: function(task) {
                     return getDuration(task.bookings);
                 }
-            }
+            }*/
         ];
 
         $scope.matchFilter = function(task) {
-            console.log("Match Filter started")
             var result = false;
             // do not filter if filter condition is not valid
             if (!$scope.filterText){
@@ -85,25 +84,19 @@ angular.module('fireTimeTracker')
                 var value;
                 try {
                     value = col.getValue(task);
-                    console.log("Match Filter value:", value)
                 }
                 catch(e){
                     value = "error";
-                    console.log("Match Filter error", e)
                 }
                 try{
                     if (value){
-                        try{
-                        console.log($scope.filterText);
                         if (value.toLowerCase().indexOf($scope.filterText.toLowerCase()) >= 0){
                             result = true
                         }
-                        } catch(e){console.log("inner: ", e)}
                     }
                 } catch(e){console.log(e)}
 
             }));
-            console.log("Match Filter result:", result)
             return result;
         }
 
@@ -121,7 +114,7 @@ angular.module('fireTimeTracker')
             var rowDelim = '\r\n';
             var csv = "";
 
-            var quote = function(value) { return "\"" + value + "\""}
+            var quote = function(value) { return value ? "\"" + value + "\"" : "\"error\""}
 
             // write column header
             $scope.taskColumns.map(function(col){
@@ -132,22 +125,30 @@ angular.module('fireTimeTracker')
 
             csv += rowDelim;
 
-            // write data
-            $scope.tasks.map(angular.bind(this, function(task){
-                if ($scope.matchFilter(task)){
-                    $scope.taskColumns.map(function(col){
-                        if (col.visible){
-                            try{
-                                csv += quote(col.getValue(task)) + colDelim;
-                            }catch(ex){
-                                csv += quote("error") + colDelim;
-                            };
-                        };
-                    });
-                }
-            }))
+            var tasks = $scope.tasks;
+            //$scope.tasks.then(function(result){
+            //    tasks = result;
 
-            var csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
-            var newWindow=window.open(csvData, 'export.csv');
+            console.log(tasks);
+                    // write data
+                    for (var t = 0; t < tasks.length; t++){
+
+                        if ($scope.matchFilter(tasks[t])){
+                            console.log(tasks[t])
+                            $scope.taskColumns.map(function(col){
+                                if (col.visible){
+
+                                    csv += quote(col.getValue(tasks[t])) + colDelim;
+
+                                };
+                            });
+                        }
+
+                        csv +=  rowDelim;
+                    }
+
+                console.log("Export");
+                var csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+                var newWindow=window.open(csvData, 'export.csv');
         }
     })

@@ -16,7 +16,7 @@
         			  	<div class="input-group">
     			  	      <input type="text" class="form-control" ng-model="newCustomerName" placeholder="New Customer">
     			  	      <span class="input-group-btn">
-    			  	        <button class="btn btn-default" type="button" ng-click="createCustomer()"><span class="glyphicon glyphicon-plus"></span></button>
+    			  	        <button class="btn btn-default" ng-disabled="!newCustomerName" type="button" ng-click="createCustomer()"><span class="glyphicon glyphicon-plus"></span></button>
     			  	      </span>
     			  	    </div>
         			  </div>
@@ -32,7 +32,7 @@
 	      			  	<div class="input-group">
 	  			  	      <input type="text" class="form-control" ng-model="newProjectName" placeholder="New Item">
 	  			  	      <span class="input-group-btn">
-	  			  	        <button class="btn btn-default" type="button" ng-click="createProject()"><span class="glyphicon glyphicon-plus"></span></button>
+	  			  	        <button class="btn btn-default" ng-disabled="!newProjectName" type="button" ng-click="createProject()"><span class="glyphicon glyphicon-plus"></span></button>
 	  			  	      </span>
 	  			  	    </div>
 	      			  </div>
@@ -49,7 +49,7 @@
 	      			  	<div class="input-group">
 	  			  	      <input type="text" class="form-control" ng-model="newTaskDescription" placeholder="New Item">
 	  			  	      <span class="input-group-btn">
-	  			  	        <button class="btn btn-default" type="button" ng-click="createTask()"><span class="glyphicon glyphicon-plus"></span></button>
+	  			  	        <button class="btn btn-default" ng-disabled="!newTaskDescription" type="button" ng-click="createTask()"><span class="glyphicon glyphicon-plus"></span></button>
 	  			  	      </span>
 	  			  	    </div>
 	      			  </div>
