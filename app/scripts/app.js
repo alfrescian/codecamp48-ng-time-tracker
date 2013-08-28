@@ -40,35 +40,38 @@ angular.module('fireTimeTracker', ['ngRoute', 'firebase','ngResource'])
           $rootScope.activetab = pathElements[1];
         } 
        });
-   }]).directive('timeClock', function( $filter, $log, $timeout){
+   }]).directive('timeClock', function( $filter, $log, $timeout, $rootScope){
 	return {
 		restrict : 'E',
 		template : '<span class="glyphicon glyphicon-time hidden" id="timeIcon"></span><span id="time">',
 		scope: {
-	         start :'@'
+	         start :'&'
 	    },
 	   link: function(scope, elm, attrs, ctrl) {
+           function safeApply(scope, fn) {
+                (scope.$$phase || scope.$root.$$phase) ? fn() : scope.$apply(fn);
+            }
             function resetTime() {
-                scope.$apply(function () {
-                    var time = $('#time')
-                    var date = new Date(scope.start++ * 1000);
-                    time.text(("0" + date.getUTCHours()).slice(-2) + ':' + ("0" + date.getUTCMinutes()).slice(-2) + ':' + ("0" + date.getUTCSeconds()).slice(-2));
+                safeApply(scope, function () {
+                    if ($rootScope.startTime){
+                        var date = new Date(Date.now() - $rootScope.startTime);
+                        $('#time').text(("0" + date.getUTCHours()).slice(-2) + ':' + ("0" + date.getUTCMinutes()).slice(-2) + ':' + ("0" + date.getUTCSeconds()).slice(-2));
+                        $('#timeIcon').removeClass('hidden');
+                    }
                 });
             }
-			$timeout(function(){
-                $log.log(scope.start)
-                if (scope.start){
+			$rootScope.$watch(scope.start, function(val){
+                if (val){
                     var time = $('#time');
                     time.hide();
                     resetTime();
                     time.fadeIn('slow');
-                    $('#timeIcon').removeClass('hidden');
                     var resetTimeInterval = setInterval(resetTime, 1000);
                     var invisibleInterval = setInterval(function () {
                         $('#timeIcon').toggleClass('invisible');
                     }, 400);
                 }
-			});
+            });
        }
 	};
 });  
