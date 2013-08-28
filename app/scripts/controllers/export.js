@@ -23,14 +23,14 @@ angular.module('fireTimeTracker')
             { visible: true, name: "Task Duration", getValue: function(task) {return durationFormat(task.duration)} },
         ];
         $scope.exportCsv = function() {
-            exportToCSV($scope, 'export.csv')
+            exportToCsv($scope, 'export.csv')
         };
 
         $scope.visibleColumns = function(){
             return $scope.taskColumns.filter(function(col) { return col.visible} )
         }
 
-        function exportToCSV($scope, filename) {
+        function exportToCsv($scope, filename) {
 
             var colDelim = ';';
             var rowDelim = '\r\n';
@@ -39,7 +39,7 @@ angular.module('fireTimeTracker')
             var quote = function(value) { return "\"" + value + "\""}
 
             // write column header
-            $scope.columns.map(function(col){
+            $scope.taskColumns.map(function(col){
                 if (col.visible){
                     csv += quote(col.name) + colDelim;
                 };
@@ -48,11 +48,11 @@ angular.module('fireTimeTracker')
             csv += rowDelim;
 
             // write data
-            $scope.tasks.map(function(tasks){
-                $scope.columns.map(function(col){
+            $scope.tasks.map(function(task){
+                $scope.taskColumns.map(function(col){
                     if (col.visible){
                         try{
-                            csv += quote(col.getValue(tasks)) + colDelim;
+                            csv += quote(col.getValue(task)) + colDelim;
                         }catch(ex){
                             csv += quote("error") + colDelim;
                         };
