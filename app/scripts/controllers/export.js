@@ -5,24 +5,22 @@ var dateFormat = function(datetime){
 var durationFormat = function(datetimeStart, datetimeEnd){
     return Math.round((new Date() - datetimeStart) / (1000*60*60), 0) + " min";
 };
+var durationFormat = function(timespan){
+    return Math.round(timespan / (1000*60*60), 0) + " min";
+};
 
 angular.module('fireTimeTracker')
     .filter('dateFormat', function() {
     return dateFormat(input);
     })
-    .controller('ExportCtrl', function ($scope, angularFireCollection, $log) {
-        var url = 'https://alfrescian.firebaseio.com/tracks';
-        $scope.tasks = angularFireCollection(url);
+    .controller('ExportCtrl', function ($scope, exportService, $log) {
+        $scope.tasks = exportService.getTasks()
         $scope.taskColumns = [
-            { visible: false, name: "User Name", getValue: function(tasks) {return tasks.user.userName} },
-            { visible: true, name: "Customer", getValue: function(tasks) {return tasks.customer.name} },
-            { visible: true, name: "Project", getValue: function(tasks) {return tasks.project.userName} },
-            { visible: true, name: "Project Status", getValue: function(tasks) {return dateFormat(tasks.project.status)} },
-            { visible: true, name: "Task Description", getValue: function(tasks) {return tasks.description} },
-            { visible: true, name: "Task Status", getValue: function(tasks) {return dateFormat(tasks.status)} },
-            { visible: true, name: "Task Start Time", getValue: function(tasks) {return dateFormat(tasks.started)} },
-            { visible: true, name: "Task End Time", getValue: function(tasks) {return dateFormat(tasks.ended)} },
-            { visible: true, name: "Task Duration", getValue: function(tasks) {return durationFormat(tasks.started, tasks.ended)} },
+            { visible: true, name: "Customer", getValue: function(task) {return task.project.customer.name} },
+            { visible: true, name: "Project", getValue: function(task) {return task.project.name} },
+            { visible: true, name: "Project Status", getValue: function(task) {return task.project.status} },
+            { visible: true, name: "Task Description", getValue: function(task) {return task.description} },
+            { visible: true, name: "Task Duration", getValue: function(task) {return durationFormat(task.duration)} },
         ];
         $scope.exportCsv = function() {
             exportToCSV($scope, 'export.csv')
@@ -50,7 +48,7 @@ angular.module('fireTimeTracker')
             csv += rowDelim;
 
             // write data
-            $scope.taskss.map(function(tasks){
+            $scope.tasks.map(function(tasks){
                 $scope.columns.map(function(col){
                     if (col.visible){
                         try{
