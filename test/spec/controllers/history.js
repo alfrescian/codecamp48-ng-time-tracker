@@ -1,17 +1,17 @@
 'use strict';
 
-describe('Controller: MainCtrl', function () {
+describe('Controller: HistoryCtrl', function () {
 
   // load the controller's module
   beforeEach(module('fireTimeTracker'));
 
-  var MainCtrl,
+  var HistoryCtrl,
     scope;
 
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
-    MainCtrl = $controller('MainCtrl', {
+    HistoryCtrl = $controller('HistoryCtrl', {
       $scope: scope
     });
   }));
