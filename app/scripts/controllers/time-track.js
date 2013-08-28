@@ -38,6 +38,10 @@ angular.module('fireTimeTracker')
 		.$promise.then(function (resp){
 			$scope.started = false;
 			$rootScope.startTime = null;
+            $scope.selectedProject = null;
+            $scope.selectedTask = null;
+            $scope.selectedCustomer = null;
+            $scope.comment = null;
         });
 	}
 

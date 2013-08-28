@@ -43,7 +43,7 @@ angular.module('fireTimeTracker', ['ngRoute', 'firebase','ngResource'])
    }]).directive('timeClock', function( $filter, $log, $timeout, $rootScope){
 	return {
 		restrict : 'E',
-		template : '<span class="glyphicon glyphicon-time hidden" id="timeIcon"></span><span id="time">',
+		template : '<div ng-show="displayTimer"><span class="glyphicon glyphicon-time hidden" id="timeIcon"></span> <span id="time"></div>',
 		scope: {
 	         start :'&'
 	    },
@@ -57,6 +57,9 @@ angular.module('fireTimeTracker', ['ngRoute', 'firebase','ngResource'])
                         var date = new Date(Date.now() - $rootScope.startTime);
                         $('#time').text(("0" + date.getUTCHours()).slice(-2) + ':' + ("0" + date.getUTCMinutes()).slice(-2) + ':' + ("0" + date.getUTCSeconds()).slice(-2));
                         $('#timeIcon').removeClass('hidden');
+                        scope.displayTimer = true;
+                    }else{
+                        scope.displayTimer = false;
                     }
                 });
             }
