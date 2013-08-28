@@ -120,6 +120,16 @@ app.get('/customers', auth, function(req, res) {
 	});
 });
 
+app.get('/history', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
+app.get('/time-track', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
+app.get('/administration', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
+
 app.post('/login/:user', function(req, res) {
 	req.session.username = req.params.user;
 	//TODO findUser(req.session.username);
@@ -250,6 +260,17 @@ app.put('/booking/:booking', auth, function(req, res) {
 		});
 	});
 });
+
+app.get('/history', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
+app.get('/time-tracking', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
+app.get('/administration', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
+
 
 // grunt specifics
 exports = module.exports = server;
