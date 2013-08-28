@@ -11,7 +11,6 @@
     "angular-cookies": "~1.2.0-rc.1",
     "angular-sanitize": "~1.2.0-rc.1",
 	"angular-route": "~1.2.0-rc.1",
-	"angular-fire": "~0.2.0",
 	"moment": "~2.1.0"
   },
   "devDependencies": {
