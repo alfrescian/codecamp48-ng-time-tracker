@@ -4,6 +4,9 @@ angular.module('fireTimeTracker', ['ngRoute', 'firebase'])
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
+        redirectTo: '/time-track'
+      })
+      .when('/firetrack', {
         templateUrl: 'views/main.html',
         controller: 'FireTimeTrackCtrl'
       })
@@ -24,6 +27,6 @@ angular.module('fireTimeTracker', ['ngRoute', 'firebase'])
         controller: 'HistoryCtrl'
       })
       .otherwise({
-        redirectTo: '/'
+        redirectTo: '/time-track'
       });
   });
