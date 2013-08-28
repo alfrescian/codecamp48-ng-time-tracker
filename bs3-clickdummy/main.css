@@ -1,0 +1,13 @@
+.timeCount {
+	font-size: 1.6em;
+	line-height: 2.2em;
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 15px;
+}
+ h3 .sorting {
+	display: none;
+ }
+ h3:hover .sorting {
+	display: inline;
+ }
