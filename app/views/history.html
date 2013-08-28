@@ -7,7 +7,7 @@
 	<div class="col-sm-8">
 		<div ng-repeat="entry in entries">
 			<h2 id="{{entry.day}}">{{entry.day | date:'MMM d, y'}} <small>{{entry.duration | dynamicDuration}}</small></h2>
-			<div class="list-group" ng-repeat="booking in entry.bookings">
+			<div class="list-group" ng-repeat="booking in entry.bookings | reverse">
 				<a href="#" class="list-group-item">
 					<h4 class="list-group-item-heading">{{booking.name}}
 						<span class="label label-success">{{booking.duration | dynamicDuration}}</span>

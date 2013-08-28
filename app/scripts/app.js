@@ -77,6 +77,10 @@ angular.module('fireTimeTracker', ['ngRoute', 'firebase','ngResource'])
             });
        }
 	};
+}).filter('reverse', function() {
+  return function(items) {
+    return items.slice().reverse();
+  };
 });  
 
 /* Patch for moment JS to format durations: https://github.com/moment/moment/issues/463 */
