@@ -3,12 +3,20 @@
         		<div class="col-md-4">
         			<h3>Customers <small class="sorting"><a href="#"><span class="glyphicon glyphicon-sort"></span></a></small></h3>
         			<div class="list-group">
-        			  <a href="" ng-repeat="customer in customers" ng-class="{active: customer.id == selectedCustomer}" ng-click="selectCustomer(customer.id)" class="list-group-item">{{customer.name}}</a>
+                        <a href="" class="list-group-item"  ng-repeat="customer in customers" ng-class="{active: customer.id == selectedCustomer}" ng-click="selectCustomer(customer.id)">
+                            <h4 class="list-group-item-heading">{{customer.data.name}} <span class="label" ng-class="{'label-success': customer.status == 'active', 'label-danger': customer.status == 'inactive'}">{{customer.data.status}}</span></h4>
+                            <p class="list-group-item-text">
+                                <!--todo-->
+                            </p>
+                            
+                            
+                       </a>
+        			 
         			  <div class="list-group-item">
         			  	<div class="input-group">
-    			  	      <input type="text" class="form-control" placeholder="New Item">
+    			  	      <input type="text" class="form-control" ng-model="newCustomerName" placeholder="New Customer">
     			  	      <span class="input-group-btn">
-    			  	        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-plus"></span></button>
+    			  	        <button class="btn btn-default" type="button" ng-click="createCustomer()"><span class="glyphicon glyphicon-plus"></span></button>
     			  	      </span>
     			  	    </div>
         			  </div>
@@ -17,12 +25,14 @@
         		<div class="col-md-4">
         			<h3>Projects <small class="sorting"><a href="#"><span class="glyphicon glyphicon-sort"></span></a></small></h3>
         			<div class="list-group">
-        			 <a href="" ng-repeat="project in projects" ng-class="{active: project.id == selectedProject}" ng-click="selectProject(project.id)" class="list-group-item">{{project.name}}</a>
+        			 <a href="" ng-repeat="project in projects" ng-class="{active: project.id == selectedProject}" ng-click="selectProject(project.id)" class="list-group-item">
+                        <h4 class="list-group-item-heading">{{project.data.name}} <span class="label" ng-class="{'label-success': project.status == 'active', 'label-danger': project.status == 'inactive'}">{{project.data.status}}</span></h4>
+                    </a>
 	      			  <div class="list-group-item">
 	      			  	<div class="input-group">
-	  			  	      <input type="text" class="form-control" placeholder="New Item">
+	  			  	      <input type="text" class="form-control" ng-model="newProjectName" placeholder="New Item">
 	  			  	      <span class="input-group-btn">
-	  			  	        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-plus"></span></button>
+	  			  	        <button class="btn btn-default" type="button" ng-click="createProject()"><span class="glyphicon glyphicon-plus"></span></button>
 	  			  	      </span>
 	  			  	    </div>
 	      			  </div>
@@ -31,12 +41,12 @@
         		<div class="col-md-4">
         			<h3>Tasks <small class="sorting"><a href="#"><span class="glyphicon glyphicon-sort"></span></a></small></h3>
         			<div class="list-group">
-        			 <a href="" ng-repeat="task in tasks" ng-class="{active: task.id == selectedTask}" ng-click="selectTask(task.id)" class="list-group-item">{{task.name}}</a>
+        			 <a href="" ng-repeat="task in tasks" ng-class="{active: task.id == selectedTask}" ng-click="selectTask(task.id)" class="list-group-item">{{task.data.description}}</a>
 	      			  <div class="list-group-item">
 	      			  	<div class="input-group">
-	  			  	      <input type="text" class="form-control" placeholder="New Item">
+	  			  	      <input type="text" class="form-control" ng-model="newTaskDescription" placeholder="New Item">
 	  			  	      <span class="input-group-btn">
-	  			  	        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-plus"></span></button>
+	  			  	        <button class="btn btn-default" type="button" ng-click="createTask()"><span class="glyphicon glyphicon-plus"></span></button>
 	  			  	      </span>
 	  			  	    </div>
 	      			  </div>

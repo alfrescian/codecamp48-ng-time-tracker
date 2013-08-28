@@ -33,7 +33,7 @@ function auth(req, res, next) {
 		return;
 	}*/
 
-	if (req.session.userNode) {
+	if (req.session.userNode && req.session.userNode.exists) {
 		next();
 		return;
 	}
@@ -70,7 +70,7 @@ app.get('/tasks', auth, function(req, res) {
 		});
 	});
 });
-app.get('/project/:project/tasks', auth, function(req, res) {
+app.get('/project/:project/task', auth, function(req, res) {
 	db.getNodeById(req.params.project, function(err, projectNode) {
 		if (err) {
 			res.send(500);
@@ -94,7 +94,7 @@ app.get('/projects', auth, function(req, res) {
 		});
 	});
 });
-app.get('/customer/:customer/projects', auth, function(req, res) {
+app.get('/customer/:customer/project', auth, function(req, res) {
 	db.getNodeById(req.params.customer, function(err, customerNode) {
 		if (err) {
 			res.send(500);
@@ -110,7 +110,7 @@ app.get('/customer/:customer/projects', auth, function(req, res) {
 		});
 	});
 });
-app.get('/customers', auth, function(req, res) {
+app.get('/customer', auth, function(req, res) {
 	req.session.userNode.getRelationships("WORKS_FOR", function(err, results) {
 		handleGet(err, results, function(data) {
 			extractAndSend(res, data);
