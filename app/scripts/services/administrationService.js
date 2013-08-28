@@ -3,7 +3,7 @@
 angular.module('fireTimeTracker')
 
     .factory('customerService', function ($resource) {
-        return $resource('customer', {}, {
+        return $resource('/api/customer', {}, {
             get: {
                 method: 'GET',
                 isArray: true
@@ -14,7 +14,7 @@ angular.module('fireTimeTracker')
         });
     })
     .factory('projectService', function ($resource) {
-        return $resource('/customer/:customerId/project', {}, {
+        return $resource('/api/customer/:customerId/project', {}, {
             get: {
                 method: 'GET',
                 isArray: true
@@ -26,7 +26,7 @@ angular.module('fireTimeTracker')
         });
     })
     .factory('taskService', function ($resource) {
-        return $resource('/project/:projectId/task', {}, {
+        return $resource('/api/project/:projectId/task', {}, {
             get: {
                 method: 'GET',
                 isArray: true
@@ -35,4 +35,10 @@ angular.module('fireTimeTracker')
                 method: 'POST'
             }
         });
+    })
+    .filter('estimationDuration', function($filter) {
+        return function(input, scope) {
+            var duration = moment.duration(input);
+            return  $filter('dynamicDuration')(duration);
+        }
     });

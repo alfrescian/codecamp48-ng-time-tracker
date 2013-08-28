@@ -41,7 +41,7 @@ function auth(req, res, next) {
 
 	findUser("tom95", function(err, node) {
 		if (err) {
-			res.send(500);
+			res.send(500, err);
 		} else {
 			req.session.userNode = node;
 			next();
@@ -58,7 +58,7 @@ app.get('/api/booking/:id?', auth, function(req, res) {
 		handleGet(err, results, function(data) {
 			extractAndSend(res, data, req.params.id);
 		}, function(err) {
-			res.send(500);
+			res.send(500, err);
 		});
 	});
 });
@@ -67,21 +67,21 @@ app.get('/api/task/:id?', auth, function(req, res) {
 		handleGet(err, results, function(data) {
 			extractAndSend(res, data, req.params.id);
 		}, function(err) {
-			res.send(500);
+			res.send(500, err);
 		});
 	});
 });
-app.get('/api/project/:project/tasks', auth, function(req, res) {
+app.get('/api/project/:project/task/:id?', auth, function(req, res) {
 	db.getNodeById(req.params.project, function(err, projectNode) {
 		if (err) {
-			res.send(500);
+			res.send(500, err);
 			return;
 		}
 		projectNode.getRelationships("HAS_TASK", function(err, results) {
 			handleGet(err, results, function(data) {
-				extractAndSend(res, data);
+				extractAndSend(res, data, req.params.id);
 			}, function(err) {
-				res.send(500);
+				res.send(500, err);
 			});
 		});
 	});
@@ -91,22 +91,22 @@ app.get('/api/project/:id?', auth, function(req, res) {
 		handleGet(err, results, function(data) {
 			extractAndSend(res, data, req.params.id);
 		}, function(err) {
-			res.send(500);
+			res.send(500, err);
 		});
 	});
 });
-app.get('/api/customer/:customer/projects', auth, function(req, res) {
+app.get('/api/customer/:customer/project/:id?', auth, function(req, res) {
 	db.getNodeById(req.params.customer, function(err, customerNode) {
 		if (err) {
-			res.send(500);
+			res.send(500, err);
 			return;
 		}
 
 		customerNode.getRelationships("HAS_PROJECT", function(err, results) {
 			handleGet(err, results, function(data) {
-				extractAndSend(res, data);
+				extractAndSend(res, data, req.params.id);
 			}, function(err) {
-				res.send(500);
+				res.send(500, err);
 			});
 		});
 	});
@@ -116,7 +116,7 @@ app.get('/api/customer/:id?', auth, function(req, res) {
 		handleGet(err, results, function(data) {
 			extractAndSend(res, data, req.params.id);
 		}, function(err) {
-			res.send(500);
+			res.send(500, err);
 		});
 	});
 });
@@ -141,7 +141,7 @@ app.post('/login/:user', function(req, res) {
 
 app.post('/api/createUser', function(req, res) {
 	db.createNode({name: req.body.name, username: req.body.username }).save(function (err, node) {
-		if (err) { res.send(500); }
+		if (err) { res.send(500, err); }
 		else { res.send(); }
 	});
 });
@@ -156,7 +156,7 @@ app.post('/api/task/:task/booking', auth, function(req, res) {
 		data.end = req.body.end;
 
 	db.createNode(data).save(function(err, bookingNode) {
-		if (err) { res.send(500); }
+		if (err) { res.send(500, err); }
 		else {
 			db.getNodeById(req.params.task, function(err, taskNode) {
 				var deferred1 = when.defer();
@@ -172,31 +172,31 @@ app.post('/api/task/:task/booking', auth, function(req, res) {
 				when(deferred1.promise, deferred2.promise).then(function(result) {
 					res.send();
 				}, function(err) {
-					res.send(500);
+					res.send(500, err);
 				});
 			});
 		}
 	});
 });
 // query to create CUSTOMER -> name
-app.post('/customer', auth, function(req, res) {
+app.post('/api/customer', auth, function(req, res) {
 	db.createNode({name: req.body.name}).save(function(err, customerNode) {
-		if (err) { res.send(500); }
+		if (err) { res.send(500, err); }
 		else {
 			customerNode.createRelationshipFrom(req.session.userNode, "WORKS_FOR", {}, function(err, rel) {
-				if (err) { res.send(500); }
-				else { res.send(); }
+				if (err) { res.send(500, err); }
+				else { console.log(customerNode); res.send( {data: customerNode.data, id: customerNode.id}); }
 			});
 		}
 	});
 });
 // query to create PROJECT -> name, estimatedTime
-app.post('/customer/:customer/project', auth, function(req, res) {
+app.post('/api/customer/:customer/project', auth, function(req, res) {
 	var data = { name: req.body.name };
 	if (req.body.estimatedTime)
 		data.estimatedTime = req.body.estimatedTime;
 	db.createNode(data).save(function(err, projectNode) {
-		if (err) { res.send(500); }
+		if (err) { res.send(500, err); }
 		else {
 			db.getNodeById(req.params.customer, function(err, customerNode) {
 				var deferred1 = when.defer();
@@ -210,23 +210,23 @@ app.post('/customer/:customer/project', auth, function(req, res) {
 					else { deferred2.resolve(rel); }
 				});
 				when(deferred1.promise, deferred2.promise).then(function(rels) {
-					res.send();
+					res.send({data: projectNode.data, id: projectNode.id});
 				}, function(err) {
-					res.send(500);
+					res.send(500, err);
 				});
 			});
 		}
 	});
 });
 // query to create TASK -> description, estimatedTime
-app.post('/project/:project/task', auth, function(req, res) {
+app.post('/api/project/:project/task', auth, function(req, res) {
 	var data = { description: req.body.description };
 	if (req.body.estimatedTime) {
 		data.estimatedTime = req.body.estimatedTime;
 	}
 
 	db.createNode(data).save(function(err, taskNode) {
-		if (err) { res.send(500); }
+		if (err) { res.send(500, err); }
 		else {
 			db.getNodeById(req.params.project, function(err, projectNode) {
 				var deferred1 = when.defer();
@@ -240,9 +240,9 @@ app.post('/project/:project/task', auth, function(req, res) {
 					else { deferred2.resolve(rel); }
 				});
 				when(deferred1.promise, deferred2.promise).then(function(rels) {
-					res.send();
+					res.send({data: taskNode.data, id: taskNode.id});
 				}, function(err) {
-					res.send(500);
+					res.send(500, err);
 				});
 			});
 		}
@@ -252,13 +252,13 @@ app.post('/project/:project/task', auth, function(req, res) {
 app.put('/booking/:booking', auth, function(req, res) {
 	db.getNodeById(req.params.booking, function(err, bookingNode) {
 		if (err) {
-			res.send(500);
+			res.send(500, err);
 			return;
 		}
 
 		bookingNode.data.end = req.body.end;
 		bookingNode.save(function(err, node) {
-			if (err) res.send(500);
+			if (err) res.send(500, err);
 			else res.send();
 		});
 	});
@@ -311,7 +311,7 @@ function findUser(username, callback) {
 
 function handleGet(err, results, successCallback, errorCallback) {
 	if (err) {
-		res.send(500);
+		res.send(500, err);
 	} else {
 		var promises = [];
 		for (var i in results) {
