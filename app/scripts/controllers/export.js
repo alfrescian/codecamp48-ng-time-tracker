@@ -58,7 +58,7 @@ angular.module('fireTimeTracker')
             },
             {
                 visible: true,
-                name: "Task Est. Time",
+                name: "Task Est. Time [h]",
                 getValue: function(task) {
                     return task.data.estimatedTime;
                 }

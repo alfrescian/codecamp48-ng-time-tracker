@@ -9,8 +9,10 @@
 			<h2 id="{{entry.day}}">{{entry.day | date:'MMM d, y'}} <small>{{entry.duration | dynamicDuration}}</small></h2>
 			<div class="list-group" ng-repeat="booking in entry.bookings | reverse">
 				<a href="#" class="list-group-item">
-					<h4 class="list-group-item-heading">{{booking.name}}
-						<span class="label label-success">{{booking.duration | dynamicDuration}}</span>
+					<h4 class="list-group-item-heading">{{booking.taskDescription}}
+						<span class="label" ng-class="{'label-success':booking.duration<30000,
+							'label-warning':booking.duration>=30000 && booking.duration<60000,
+							'label-danger':booking.duration>=60000}">{{booking.duration | dynamicDuration}}</span>
 						<small>{{booking.start | date:'HH:mm:ss'}} - {{booking.end | date:'HH:mm:ss'}}</small>
 					</h4>
 					<blockquote class="list-group-item-text">{{booking.description}}</blockquote>
