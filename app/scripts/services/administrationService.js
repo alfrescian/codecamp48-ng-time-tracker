@@ -36,9 +36,11 @@ angular.module('fireTimeTracker')
             }
         });
     })
-    .filter('estimationDuration', function($filter) {
+    .filter('estimationDuration', function($filter, $log) {
         return function(input, scope) {
-            var duration = moment.duration(input);
-            return  $filter('dynamicDuration')(duration);
+            if (input){
+                var duration = moment.duration(input);
+                return  $filter('dynamicDuration')(duration);
+            }
         }
     });

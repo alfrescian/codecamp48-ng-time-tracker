@@ -40,7 +40,7 @@ angular.module('fireTimeTracker')
     $scope.createProject = function(){
         var id = projectService.create({customerId: $scope.selectedCustomer},{
             name : $scope.newProjectName,
-            estimatedTime: 123456
+            estimatedTime: 12345678
         }).$promise.then(function (resp){
             $scope.newProjectName = null;
             $scope.projects.push(resp);
@@ -55,7 +55,7 @@ angular.module('fireTimeTracker')
     $scope.createTask = function(){
         var id = taskService.create({projectId: $scope.selectedProject},{
             description : $scope.newTaskDescription,
-            estimatedTime: 456                         
+            estimatedTime: 2345678                         
         }).$promise.then(function (resp){
             $scope.newTaskDescription= null;
             $scope.tasks.push(resp);

@@ -147,10 +147,10 @@ app.post('/api/createUser', function(req, res) {
 });
 
 // query to create BOOKING -> name, start[, end]
-app.post('/api/task/:task/booking', auth, function(req, res) {
+app.post('/api/booking', auth, function(req, res) {
 	var data = {
 		description: req.body.description,
-		start: req.body.start
+		start: Date.now()
 	};
 	if (req.body.end)
 		data.end = req.body.end;
@@ -158,23 +158,10 @@ app.post('/api/task/:task/booking', auth, function(req, res) {
 	db.createNode(data).save(function(err, bookingNode) {
 		if (err) { res.send(500, err); }
 		else {
-			db.getNodeById(req.params.task, function(err, taskNode) {
-				var deferred1 = when.defer();
-				bookingNode.createRelationshipFrom(taskNode, "HAS_BOOKING", {}, function(err, rel) {
-					if (err) { deferred1.reject(err); }
-					else { deferred1.resolve(); }
-				});
-				var deferred2 = when.defer();
-				bookingNode.createRelationshipFrom(req.session.userNode, "HAS_BOOKING", {}, function(err, rel) {
-					if (err) { deferred2.reject(err); }
-					else { deferred2.resolve(); }
-				});
-				when(deferred1.promise, deferred2.promise).then(function(result) {
-					res.send();
-				}, function(err) {
-					res.send(500, err);
-				});
-			});
+            bookingNode.createRelationshipFrom(req.session.userNode, "HAS_BOOKING", {}, function(err, rel) {
+                if (err) { res.send(500, err); }
+                else { console.log(bookingNode); res.send( {data: bookingNode.data, id: bookingNode.id}); }
+            });
 		}
 	});
 });
@@ -255,12 +242,30 @@ app.put('/booking/:booking', auth, function(req, res) {
 			res.send(500, err);
 			return;
 		}
-
-		bookingNode.data.end = req.body.end;
-		bookingNode.save(function(err, node) {
-			if (err) res.send(500, err);
-			else res.send();
-		});
+            
+        db.getNodeById(req.body.task, function(err, taskNode) {
+            var deferred1 = when.defer();
+            bookingNode.createRelationshipFrom(taskNode, "HAS_BOOKING", {}, function(err, rel) {
+                if (err) { deferred1.reject(err); }
+                else { deferred1.resolve(); }
+            });
+            var deferred2 = when.defer();
+            
+            bookingNode.data.end = Date.now();
+            if (req.body.description){
+                bookingNode.data.description = req.body.description
+            }
+            bookingNode.save(function(err, node) {
+                if (err) { deferred2.reject(err); }
+                else { deferred2.resolve(); }
+            });
+            
+            when(deferred1.promise, deferred2.promise).then(function(result) {
+                res.send();
+            }, function(err) {
+                res.send(500, err);
+            });
+        });
 	});
 });
 

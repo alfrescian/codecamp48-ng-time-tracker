@@ -26,7 +26,7 @@
         			<h3>Projects <small class="sorting"><a href="#"><span class="glyphicon glyphicon-sort"></span></a></small></h3>
         			<div class="list-group">
         			 <a href="" ng-repeat="project in projects" ng-class="{active: project.id == selectedProject}" ng-click="selectProject(project.id)" class="list-group-item">
-                        <h4 class="list-group-item-heading">{{project.data.name}} <span class="label" ng-class="{'label-success': project.status == 'active', 'label-danger': project.status == 'inactive'}">{{project.data.estimatedTime}}</span></h4>
+                        <h4 class="list-group-item-heading">{{project.data.name}} <span class="label label-info">{{project.data.estimatedTime | estimationDuration}}</span></h4>
                     </a>
 	      			  <div class="list-group-item">
 	      			  	<div class="input-group">
@@ -41,7 +41,10 @@
         		<div class="col-md-4">
         			<h3>Tasks <small class="sorting"><a href="#"><span class="glyphicon glyphicon-sort"></span></a></small></h3>
         			<div class="list-group">
-        			 <a href="" ng-repeat="task in tasks" ng-class="{active: task.id == selectedTask}" ng-click="selectTask(task.id)" class="list-group-item">{{task.data.description}}</a>
+        			 <a href="" ng-repeat="task in tasks" ng-class="{active: task.id == selectedTask}" ng-click="selectTask(task.id)" class="list-group-item">
+                           <h4 class="list-group-item-heading">{{task.data.description}} <span class="label label-info">{{task.data.estimatedTime | estimationDuration}}</span></h4>
+                        
+                    </a>
 	      			  <div class="list-group-item">
 	      			  	<div class="input-group">
 	  			  	      <input type="text" class="form-control" ng-model="newTaskDescription" placeholder="New Item">
