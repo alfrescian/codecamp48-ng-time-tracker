@@ -3,7 +3,7 @@
 	  <form action="" novalidate>
 	    <div class="form-group">
 	      <label for="comment" class="control-label">Comment</label>
-	      <textarea id="comment" name="comment" class="form-control" rows="4" required></textarea>
+	      <textarea id="comment" name="comment" class="form-control" rows="4" required ng-model="comment"></textarea>
 	    </div>
 	    <div class="row" id="projectDependencies">
 	    	<div class="col-md-4 dependency">
@@ -28,7 +28,9 @@
 	    		</div>
 	    	</div>
 	    </div>
-	    <button id="startTracking" type="submit" class="btn btn-block btn-lg btn-primary" title="Start"><span class="glyphicon glyphicon-play"></span></button>
+	    <button id="startTracking" ng-if="!started" type="submit" class="btn btn-block btn-lg btn-primary" title="Start" ng-click="start()"><span class="glyphicon glyphicon-play"></span></button>
+	    <button id="stopTracking" ng-if="started" type="submit" class="btn btn-block btn-lg btn-danger" title="Stop" ng-click="stop()"><span class="glyphicon glyphicon-stop"></span></button>
+
 	  </form>
 	</div>
 </div>

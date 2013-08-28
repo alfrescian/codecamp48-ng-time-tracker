@@ -5,6 +5,4 @@ angular.module('fireTimeTracker')
     
     $scope.entries = historyService.getEntries();
 
-
-
 });
