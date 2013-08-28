@@ -19,7 +19,7 @@ angular.module('fireTimeTracker')
 
   	this.getEntries = function() {
       var entries = $q.defer();
-      $http.get('/api/booking').success(function(data) {
+      $http.get('/api/bookingTask').success(function(data) {
         var result =  {};
         $.each(data, function(i, value) {
 
@@ -32,9 +32,6 @@ angular.module('fireTimeTracker')
           if (!result[day]) {
             result[day] = { "day" : day, "bookings" : [] };
           }
-
-          // add a task description which is currently missing from the JSON data
-          value.data.name = "Dummy Task Description";
 
           result[day].bookings.push(value.data);
         });
