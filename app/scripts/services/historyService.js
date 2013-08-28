@@ -15,7 +15,7 @@ angular.module('fireTimeTracker')
 
   	this.getEntries = function() {
       var entries = $q.defer();
-      $http.get('/bookings').success(function(data) {
+      $http.get('/api/booking').success(function(data) {
         var result =  {};
         $.each(data, function(i, value) {
 
