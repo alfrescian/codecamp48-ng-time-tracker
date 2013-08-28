@@ -7,7 +7,7 @@ var when = require('when');
 
 var path = require('path');
 
-var db = new neo4j.GraphDatabase('http://localhost:7474');
+var db = new neo4j.GraphDatabase('http://192.168.200.197:7474');
 
 // all environments
 app.use(express.logger('dev'));
