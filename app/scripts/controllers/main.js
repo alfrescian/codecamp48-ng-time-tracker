@@ -1,7 +1,6 @@
 'use strict';
-
 angular.module('fireTimeTracker')
-  .controller('FireTimeTrackCtrl', function ($scope, angularFireCollection, $log) {
+    .controller('FireTimeTrackCtrl', function ($scope, angularFireCollection, $log) {
     
 	//init scope
 	$scope.activeTrack = {};
@@ -18,9 +17,8 @@ angular.module('fireTimeTracker')
 			name : "Hochschule Harz"
 		}
 	];
-		
-	
-	var url = 'https://alfrescian.firebaseio.com/tracks';
+
+    var url = 'https://alfrescian.firebaseio.com/tracks';
 	$scope.tracks = angularFireCollection(url);
 	
 	$scope.startFireTrack = function(){

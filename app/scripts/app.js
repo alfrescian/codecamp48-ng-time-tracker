@@ -19,8 +19,8 @@ angular.module('fireTimeTracker', ['ngRoute', 'firebase'])
         controller: 'AdministrationCtrl'
       })
       .when('/export', {
-        templateUrl: 'views/export.html',
-        controller: 'ExportCtrl'
+            templateUrl: 'views/export.html',
+            controller: 'ExportCtrl'
       })
       .when('/history', {
         templateUrl: 'views/history.html',
