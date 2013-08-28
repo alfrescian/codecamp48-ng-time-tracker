@@ -5,6 +5,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var neo4j = require('neo4j');
 var when = require('when');
+var requestify = require('requestify');
 
 var config = require('../config');
 
@@ -52,25 +53,25 @@ io.sockets.on('connection', function(socket) {
 });
 
 // routes
-app.get('/bookings', auth, function(req, res) {
+app.get('/api/booking/:id?', auth, function(req, res) {
 	req.session.userNode.getRelationships("HAS_BOOKING", function(err, results) {
 		handleGet(err, results, function(data) {
-			extractAndSend(res, data);
+			extractAndSend(res, data, req.params.id);
 		}, function(err) {
 			res.send(500);
 		});
 	});
 });
-app.get('/tasks', auth, function(req, res) {
+app.get('/api/task/:id?', auth, function(req, res) {
 	req.session.userNode.getRelationships("HAS_TASK", function(err, results) {
 		handleGet(err, results, function(data) {
-			extractAndSend(res, data);
+			extractAndSend(res, data, req.params.id);
 		}, function(err) {
 			res.send(500);
 		});
 	});
 });
-app.get('/project/:project/tasks', auth, function(req, res) {
+app.get('/api/project/:project/tasks', auth, function(req, res) {
 	db.getNodeById(req.params.project, function(err, projectNode) {
 		if (err) {
 			res.send(500);
@@ -85,16 +86,16 @@ app.get('/project/:project/tasks', auth, function(req, res) {
 		});
 	});
 });
-app.get('/projects', auth, function(req, res) {
+app.get('/api/project/:id?', auth, function(req, res) {
 	req.session.userNode.getRelationships("HAS_PROJECT", function(err, results) {
 		handleGet(err, results, function(data) {
-			extractAndSend(res, data);
+			extractAndSend(res, data, req.params.id);
 		}, function(err) {
 			res.send(500);
 		});
 	});
 });
-app.get('/customer/:customer/projects', auth, function(req, res) {
+app.get('/api/customer/:customer/projects', auth, function(req, res) {
 	db.getNodeById(req.params.customer, function(err, customerNode) {
 		if (err) {
 			res.send(500);
@@ -110,10 +111,10 @@ app.get('/customer/:customer/projects', auth, function(req, res) {
 		});
 	});
 });
-app.get('/customers', auth, function(req, res) {
+app.get('/api/customer/:id?', auth, function(req, res) {
 	req.session.userNode.getRelationships("WORKS_FOR", function(err, results) {
 		handleGet(err, results, function(data) {
-			extractAndSend(res, data);
+			extractAndSend(res, data, req.params.id);
 		}, function(err) {
 			res.send(500);
 		});
@@ -138,7 +139,7 @@ app.post('/login/:user', function(req, res) {
 	//TODO findUser(req.session.username);
 });
 
-app.post('/createUser', function(req, res) {
+app.post('/api/createUser', function(req, res) {
 	db.createNode({name: req.body.name, username: req.body.username }).save(function (err, node) {
 		if (err) { res.send(500); }
 		else { res.send(); }
@@ -146,7 +147,7 @@ app.post('/createUser', function(req, res) {
 });
 
 // query to create BOOKING -> name, start[, end]
-app.post('/task/:task/booking', auth, function(req, res) {
+app.post('/api/task/:task/booking', auth, function(req, res) {
 	var data = {
 		description: req.body.description,
 		start: req.body.start
@@ -268,33 +269,21 @@ app.post('/login/:user', function(req, res) {
 	req.session.username = req.params.user;
 	//TODO findUser(req.session.username);
 });
-/*app.get('/oauth2callback', function(req, res) {
-	if (req.body.access_token) {
-		console.log("HOOORAII!!", req.body);
-		return;
-	}
-
-	var data = "code=" + req.query.code +
-		"&client_id=" + config.clientId +
-		"&client_secret=" + config.secret + 
-		"&redirect_uri=" + config.oauthRedirectUri + 
-		"&grant_type=authorization_token";
-
-	var r = https.request({
-		host: 'accounts.google.com',
-		port: 443,
-		path: '/o/oauth2/token',
+/*app.get('/authcallback', function(req, res) {
+	requestify.post("https://github.com/login/oauth/access_token", {
+		body: {
+			client_id: config.github.clientId,
+			client_secret: config.github.secret,
+			code: req.query.code,
+			redirect_uri: config.oauthRedirectUri
+		},
 		method: 'POST',
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded',
-			'Content-Length': data.length
-		}
-	}, function(result) {
-		console.log("HOORRAI:", result, result.body);
-		res.send();
+		dataType: 'form-url-encoded'
+	}).then(function(res) {
+		console.log(res.getData());
+	}, function(err) {
+		console.log(err);
 	});
-	r.write(data);
-	r.end();
 });
 app.get('/test', function(req, res) {
 	res.sendfile('test.html', {root: './app'});
@@ -339,7 +328,24 @@ function handleGet(err, results, successCallback, errorCallback) {
 	}
 }
 
-function extractAndSend(res, data) {
+function extractAndSend(res, data, id) {
+	console.log("abc");
+	var found = false;
+	if (id) {
+		for (var i in data) {
+			if (data[i].id == id) {
+				data = [data[i]];
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) {
+			res.send(404);
+			return;
+		}
+	}
+
 	var list = [];
 	for (var i in data) {
 		list.push({data: data[i].data, id: data[i].id});
