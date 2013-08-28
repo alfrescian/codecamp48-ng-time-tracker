@@ -33,7 +33,7 @@ function auth(req, res, next) {
 		return;
 	}*/
 
-	if (req.session.userNode) {
+	if (req.session.userNode && req.session.userNode.exists) {
 		next();
 		return;
 	}
@@ -290,7 +290,7 @@ app.post('/login/:user', function(req, res) {
 			'Content-Length': data.length
 		}
 	}, function(result) {
-		console.log("HOORRAI:", result);
+		console.log("HOORRAI:", result, result.body);
 		res.send();
 	});
 	r.write(data);
