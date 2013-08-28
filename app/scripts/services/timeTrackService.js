@@ -3,7 +3,7 @@
 angular.module('fireTimeTracker')
 
     .factory('bookingService', function ($resource) {
-        return $resource('/api/booking', {}, {
+        return $resource('/api/booking/:bookingId', {}, {
             get: {
                 method: 'GET',
                 isArray: true
@@ -14,7 +14,6 @@ angular.module('fireTimeTracker')
             update: {
                 method: 'PUT'
             }
-            
         });
     })
   // .service('timeTrackService', function timeTrackService() {

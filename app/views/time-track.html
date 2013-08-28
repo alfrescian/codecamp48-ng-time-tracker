@@ -16,20 +16,20 @@
 	    	<div class="col-md-4 dependency">
 	    		<div class="form-group">
 	    		  <label for="project" class="control-label">Project</label>
-	    		  <select id="project" name="project" class="form-control" required ng-model="selectedProject" ng-options="p.data.name for p in projects"  ng-change="projectSelected()">
+	    		  <select id="project" name="project" ng-disabled="!selectedCustomer" class="form-control" required ng-model="selectedProject" ng-options="p.data.name for p in projects"  ng-change="projectSelected()">
 	    		  </select>
 	    		</div>
 	    	</div>
 	    	<div class="col-md-4 dependency">
 	    		<div class="form-group">
 	    		  <label for="task" class="control-label">Task</label>
-	    		  <select id="task" name="task" class="form-control" required ng-model="selectedTask" ng-options="t.data.description for t in tasks">
+	    		  <select id="task" name="task" ng-disabled="!selectedProject" class="form-control" required ng-model="selectedTask" ng-options="t.data.description for t in tasks">
 	    		  </select>
 	    		</div>
 	    	</div>
 	    </div>
 	    <button id="startTracking" ng-if="!started" type="submit" class="btn btn-block btn-lg btn-primary" title="Start" ng-click="start()"><span class="glyphicon glyphicon-play"></span></button>
-	    <button id="stopTracking" ng-if="started" type="submit" class="btn btn-block btn-lg btn-danger" title="Stop" ng-click="stop()"><span class="glyphicon glyphicon-stop"></span></button>
+	    <button id="stopTracking" ng-disabled="!selectedTask || !comment" ng-if="started" type="submit" class="btn btn-block btn-lg btn-danger" title="Stop" ng-click="stop()"><span class="glyphicon glyphicon-stop"></span></button>
 
 	  </form>
 	</div>
