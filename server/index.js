@@ -3,6 +3,7 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var neo4j = require('neo4j');
+var when = require('when');
 
 var path = require('path');
 
@@ -24,75 +25,181 @@ if ('development' == app.get('env')) {
 
 // middleware
 function auth(req, res, next) {
-	if (!req.session.authorized || req.params.user != req.session.user) {
+	/*if (false && !req.session.authorized || req.params.user != req.session.user) {
 		res.status(403).send("Not authorized");
 		return;
+	}*/
+
+	if (req.session.userNode) {
+		next();
+		return;
 	}
-	next();
+
+	findUser("tom95", function(err, node) {
+		if (err) {
+			res.send(500);
+		} else {
+			req.session.userNode = node;
+			next();
+		}
+	});
 }
 
 io.sockets.on('connection', function(socket) {
 });
 
 // routes
-app.get('/user/:user/:booking', auth, function(req, res) {
-	res.send();
+app.get('/user/:user/bookings', auth, function(req, res) {
+	req.session.userNode.getRelationships("HAS_BOOKING", function(err, results) {
+		handleGet(err, results, function(data) {
+			res.send(data);
+		}, function(err) {
+			res.send(500);
+		});
+	});
 });
-app.get('/user/:user/:task', auth, function(req, res) {
-	res.send();
+app.get('/user/:user/tasks', auth, function(req, res) {
+	req.session.userNode.getRelationships("HAS_TASK", function(err, results) {
+		handleGet(err, results, function(data) {
+			res.send(data);
+		}, function(err) {
+			res.send(500);
+		});
+	});
 });
-app.get('/user/:user/:project', auth, function(req, res) {
-	res.send();
+app.get('/user/:user/projects', auth, function(req, res) {
+	req.session.userNode.getRelationships("HAS_PROJECT", function(err, results) {
+		handleGet(err, results, function(data) {
+			res.send(data);
+		}, function(err) {
+			res.send(500);
+		});
+	});
 });
-app.get('/user/:user/:customer', auth, function(req, res) {
-	res.send();
+app.get('/user/:user/customers', auth, function(req, res) {
+	req.session.userNode.getRelationships("WORKS_FOR", function(err, results) {
+		handleGet(err, results, function(data) {
+			res.send(data);
+		}, function(err) {
+			res.send(500);
+		});
+	});
 });
 
 app.post('/login/:user', function(req, res) {
 	req.session.username = req.params.user;
-	req.session.userNode = findUser(req.session.username);
+	//TODO findUser(req.session.username);
 });
 
 app.post('/createUser', function(req, res) {
-	var node = db.createNode({name: req.body.name, username: req.body.username });
-	node.save(function (err, node) {
-		if (err) {
-			res.send(500);
-		} else {
-			res.send();
-		}
+	db.createNode({name: req.body.name, username: req.body.username }).save(function (err, node) {
+		if (err) { res.send(500); }
+		else { res.send(); }
 	});
 });
 
-app.post('/user/:user/booking', auth, function(req, res) {
-	// query -> name, datum start [end]
-	// /tom/Name%20des%20booking?start=12345&end=23489
-});
-app.post('/user/:user/customer', auth, function(req, res) {
-	// query -> name
-	var node = db.createNode({name: req.body.name});
-	node.save(function(err, node) {
-		if (err) {
-			res.send(500);
-		} else {
-			node.createRelationshipTo(req.session.userNode, "WORKS_FOR", {}, function(err, rel) {
-				if (err) {
-					res.send(500);
-				} else {
+// query to create BOOKING -> name, start[, end]
+app.post('/user/:user/task/:task/booking', auth, function(req, res) {
+	var data = {
+		description: req.body.description,
+		start: req.body.start
+	};
+	if (req.body.end)
+		data.end = req.body.end;
+
+	db.createNode(data).save(function(err, bookingNode) {
+		if (err) { res.send(500); }
+		else {
+			db.getNodeById(req.params.task, function(err, taskNode) {
+				var deferred1 = when.defer();
+				bookingNode.createRelationshipFrom(taskNode, "HAS_BOOKING", {}, function(err, rel) {
+					if (err) { deferred1.reject(err); }
+					else { deferred1.resolve(); }
+				});
+				var deferred2 = when.defer();
+				bookingNode.createRelationshipFrom(req.session.userNode, "HAS_BOOKING", {}, function(err, rel) {
+					if (err) { deferred2.reject(err); }
+					else { deferred2.resolve(); }
+				});
+				when(deferred1.promise, deferred2.promise).then(function(result) {
 					res.send();
-				}
+				}, function(err) {
+					res.send(500);
+				});
 			});
 		}
 	});
 });
-app.post('/user/:user/:customer/project', auth, function(req, res) {
-	var node = db.creatNode({name: req.body.name, estimatedTime: req.query.estimatedTime});
-	node.save(function(err, node) {
+// query to create CUSTOMER -> name
+app.post('/user/:user/customer', auth, function(req, res) {
+	db.createNode({name: req.body.name}).save(function(err, customerNode) {
+		if (err) { res.send(500); }
+		else {
+			customerNode.createRelationshipFrom(req.session.userNode, "WORKS_FOR", {}, function(err, rel) {
+				if (err) { res.send(500); }
+				else { res.send(); }
+			});
+		}
 	});
-	// query -> name, estimatedTime
 });
-app.post('/user/:user/:project/task', auth, function(req, res) {
-	// query -> name, estimatedTime
+// query to create PROJECT -> name, estimatedTime
+app.post('/user/:user/customer/:customer/project', auth, function(req, res) {
+	var data = { name: req.body.name };
+	if (req.body.estimatedTime)
+		data.estimatedTime = req.body.estimatedTime;
+	db.createNode(data).save(function(err, projectNode) {
+		if (err) { res.send(500); }
+		else {
+			db.getNodeById(req.params.customer, function(err, customerNode) {
+				var deferred1 = when.defer();
+				projectNode.createRelationshipFrom(req.session.userNode, "WORKS_IN", {}, function(err, rel) {
+					if (err) { deferred1.reject(err); }
+					else { deferred1.resolve(rel); }
+				});
+				var deferred2 = when.defer();
+				projectNode.createRelationshipFrom(customerNode, "HAS_PROJECT", {}, function(err, rel) {
+					if (err) { deferred2.reject(err); }
+					else { deferred2.resolve(rel); }
+				});
+				when(deferred1.promise, deferred2.promise).then(function(rels) {
+					res.send();
+				}, function(err) {
+					res.send(500);
+				});
+			});
+		}
+	});
+});
+// query to create TASK -> description, estimatedTime
+app.post('/user/:user/project/:project/task', auth, function(req, res) {
+	var data = { description: req.body.description };
+	if (req.body.estimatedTime) {
+		data.estimatedTime = req.body.estimatedTime;
+	}
+
+	db.createNode(data).save(function(err, taskNode) {
+		console.log(err);
+		if (err) { res.send(500); }
+		else {
+			db.getNodeById(req.params.project, function(err, projectNode) {
+				var deferred1 = when.defer();
+				taskNode.createRelationshipFrom(projectNode, "HAS_TASK", {}, function(err, rel) {
+					if (err) { deferred1.reject(err); }
+					else { deferred1.resolve(rel); }
+				});
+				var deferred2 = when.defer();
+				taskNode.createRelationshipFrom(req.session.userNode, "HAS_TASK", {}, function(err, rel) {
+					if (err) { deferred2.reject(err); }
+					else { deferred2.resolve(rel); }
+				});
+				when(deferred1.promise, deferred2.promise).then(function(rels) {
+					res.send();
+				}, function(err) {
+					res.send(500);
+				});
+			});
+		}
+	});
 });
 
 app.put('/update/:user/:booking', auth, function(req, res) {
@@ -113,8 +220,27 @@ function findUser(username, callback) {
 		if (err || !res || res.length == 0) {
 			callback(err, null);
 		} else {
-			callback(err, res[0]);
+			callback(err, res[0].n);
 		}
 	});
+}
+
+function handleGet(err, results, successCallback, errorCallback) {
+	if (err) {
+		res.send(500);
+	} else {
+		var promises = [];
+		for (var i in results) {
+			(function() {
+				var deferred = when.defer();
+				promises.push(deferred.promise);
+				db.getNodeById(results[i].end.id, function(err, node) {
+					if (err) { deferred.reject(err); }
+					else { deferred.resolve(node.data); }
+				});
+			})();
+		}
+		when.all(promises).then(successCallback, errorCallback);
+	}
 }
 

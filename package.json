@@ -4,6 +4,7 @@
   "dependencies": {},
   "devDependencies": {
 	"express" : "3.2.2",
+	"when" : "2.3.0",
 	"neo4j" : "0.2.20",
     "grunt": "~0.4.1",
 	"socket.io": "0.9.16",
