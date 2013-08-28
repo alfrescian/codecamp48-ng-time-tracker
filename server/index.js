@@ -41,7 +41,7 @@ function auth(req, res, next) {
 
 	findUser("tom95", function(err, node) {
 		if (err) {
-			res.send(500, err);
+			res.send(500, "No user defined!!!" + err);
 		} else {
 			req.session.userNode = node;
 			next();
@@ -62,34 +62,46 @@ app.get('/api/booking/:id?', auth, function(req, res) {
 		});
 	});
 });
-/*app.get('/api/booking+task/:bookingId?', auth, function(req, res) {
-	var promises;
-	req.session.userNode.getRelationships("HAS_BOOKING", function(err, results) {
-		promises = [];
-		for (var i in results) {
-			(function() {
-				var deferred = when.defer();
-				promises.push(deferred.promise);
-				db.getNodeById(results[i].end.id, function(err, node) {
-					if (err) { deferred.reject(err); }
-					else { deferred.resolve(node); }
-				});
-			})();
+
+app.get('/api/bookingTask/:bookingId?', auth, function (req, res) {
+	req.session.userNode.getRelationships("BOOKED", function (err, rels) {
+		if (err) {
+			res.send(500, err);
+			return;
 		}
-		when.all(promises).then(function(bookings) {
+		var promises = [];
+		for (var i in rels) {
+			(function () {
+				var deferred = when.defer();
+				var booking = rels[i].end;
+				promises.push(deferred.promise);
+				db.getNodeById(booking.id, function (err, booking) {
+					if (err) {
+						deferred.reject(err);
+					} else {
+						booking.incoming("HAS_BOOKING", function (err, bookingRels) {
+							if (!bookingRels[0]) {
+								deferred.resolve(null);
+								return;
+							}
+							var task = bookingRels[0].start;
+							db.getNodeById(task.id, function (err, task) {
+								booking.data.taskDescription = task.data.description;
+								deferred.resolve(booking);
+							});
+						});
+					}
+				});
+			}());
+		}
+		when.all(promises).then(function (bookings) {
+			extractAndSend(res, bookings, req.params.bookingId);
 		}, function(err) {
-			promises = [];
-			for (var i in bookings) {
-				(function() {
-					var deferred = when.defer();
-					promises.push(deferred.promise);
-				})();
-			}
-			when.all(promises)
-			res.send(500);
+			res.send(500, err);
 		});
 	});
-});*/
+});	
+
 app.get('/api/task/:id?', auth, function(req, res) {
 	req.session.userNode.getRelationships("WORKS_ON", function(err, results) {
 		handleGet(err, results, function(data) {
@@ -380,6 +392,8 @@ function extractAndSend(res, data, id) {
 
 	var list = [];
 	for (var i in data) {
+		if (!data[i])
+			continue;
 		list.push({data: data[i].data, id: data[i].id});
 	}
 	res.send(list);
