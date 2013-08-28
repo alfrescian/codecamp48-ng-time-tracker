@@ -1,4 +1,5 @@
-    <div class="btn-toolbar" style="margin: 0;">
+<div class="row">
+    <div class="btn-toolbar col-md-8"  style="margin: 0;">
         <!-- Export -->
         <div class="btn-group">
             <button class="btn dropdown-toggle" data-toggle="dropdown">Export <span class="caret"></span></button>
@@ -19,15 +20,18 @@
                 </li>
             </ul>
         </div>
-
-        <!-- Add Filter -->
-        <div class="btn-group">
-            <button class="btn ">Add Filter</button>
-        </div>
     </div>
+    <div class="col-md-4">
+        <input type="text" class="form-control " placeholder="Filter text" ng-model="filterText"></text>
+    </div>
+</div>
+
+
+
 
     </br>
 
+    <!--
     <div class="form-group" style="margin: 0;">
 
         <div class="btn-group">
@@ -39,8 +43,8 @@
             </ul>
 
         </div>
-        <input type="text" placeholder="Filter text" ng-model="filterText"></text>
-    </div>
+
+    </div> -->
 
 
     <div class="container">
