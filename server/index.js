@@ -236,7 +236,7 @@ app.post('/project/:project/task', auth, function(req, res) {
 	});
 });
 
-app.put('/update/booking/:booking', auth, function(req, res) {
+app.put('/booking/:booking', auth, function(req, res) {
 	db.getNodeById(req.params.booking, function(err, bookingNode) {
 		if (err) {
 			res.send(500);
