@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "dependencies": {},
   "devDependencies": {
+	"express" : "3.2.2",
+	"neo4j" : "0.2.20",
     "grunt": "~0.4.1",
+	"socket.io": "0.9.16",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-coffee": "~0.7.0",
@@ -20,6 +23,7 @@
     "grunt-usemin": "~0.1.11",
     "grunt-svgmin": "~0.2.0",
     "grunt-rev": "~0.1.0",
+	"grunt-express": "0.3",
     "grunt-open": "~0.2.0",
     "grunt-concurrent": "~0.3.0",
     "load-grunt-tasks": "~0.1.0",

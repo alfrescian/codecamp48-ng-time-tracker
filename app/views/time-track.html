@@ -1,0 +1,44 @@
+<div class="row tab-content">
+	<div class="col-sm-push-2 col-sm-8 tab-pane active" id="timetracking">
+	  <form action="" novalidate>
+	    <div class="form-group">
+	      <label for="comment" class="control-label">Comment</label>
+	      <textarea id="comment" name="comment" class="form-control" rows="4" required></textarea>
+	    </div>
+	    <div class="row" id="projectDependencies">
+	    	<div class="col-md-4 dependency">
+	    		<div class="form-group">
+	    		  <label for="customer" class="control-label">Customer</label>
+	    		  <select id="customer" name="customer" class="form-control" required>
+	    		    <option value="">Please Choose</option>
+	    		    <option value="1">Micromata</option>
+	    		    <option value="1">Glinicke</option>
+	    		    <option value="1">Hochschule Harz</option>
+	    		  </select>
+	    		</div>
+	    	</div>
+	    	<div class="col-md-4 dependency">
+	    		<div class="form-group">
+	    		  <label for="project" class="control-label">Project</label>
+	    		  <select id="project" name="project" class="form-control" required>
+	    		    <option value="">Please choose</option>
+	    		    <option value="1">Website</option>
+	    		    <option value="1">Intranet</option>
+	    		  </select>
+	    		</div>
+	    	</div>
+	    	<div class="col-md-4 dependency">
+	    		<div class="form-group">
+	    		  <label for="task" class="control-label">Task</label>
+	    		  <select id="task" name="task" class="form-control" required>
+	    		    <option value="">Please choose</option>
+	    		    <option value="1">Fehler im Header (2.004.1)</option>
+	    		    <option value="1">Footer falsch dargestellt (2.004.2)</option>
+	    		  </select>
+	    		</div>
+	    	</div>
+	    </div>
+	    <button id="startTracking" type="submit" class="btn btn-block btn-lg btn-primary" title="Start"><span class="glyphicon glyphicon-play"></span></button>
+	  </form>
+	</div>
+</div>

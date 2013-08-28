@@ -1,9 +1,10 @@
 // Generated on 2013-08-26 using generator-angular 0.4.0
 'use strict';
+var path = require('path');
 var LIVERELOAD_PORT = 35729;
-var lrSnippet = require('connect-livereload')({ port: LIVERELOAD_PORT });
+//var lrSnippet = require('connect-livereload')({ port: LIVERELOAD_PORT });
 var mountFolder = function (connect, dir) {
-  return connect.static(require('path').resolve(dir));
+  return connect.static(path.resolve(dir));
 };
 
 // # Globbing
@@ -64,7 +65,7 @@ module.exports = function (grunt) {
         }]
       }
     },
-    connect: {
+    /*connect: {
       options: {
         port: 9000,
         // Change this to '0.0.0.0' to access the server from outside.
@@ -100,10 +101,36 @@ module.exports = function (grunt) {
           }
         }
       }
-    },
+    },*/
+    express: {
+      options: {
+        port: 9000,
+        hostname: '0.0.0.0'
+      },
+      livereload: {
+        options: {
+          server: path.resolve('./server'),
+          livereload: true,
+          serverreload: true,
+          bases: [path.resolve('./.tmp'), path.resolve(__dirname, yeomanConfig.app)]
+        }
+      },
+      test: {
+        options: {
+          server: path.resolve('./server'),
+          bases: [path.resolve('./.tmp'), path.resolve(__dirname, 'test')]
+        }
+      },
+      dist: {
+        options: {
+          server: path.resolve('./server'),
+          bases: path.resolve(__dirname, yeomanConfig.dist)
+        }
+      }
+	},
     open: {
       server: {
-        url: 'http://localhost:<%= connect.options.port %>'
+        url: 'http://localhost:<%= express.options.port %>'
       }
     },
     clean: {
@@ -325,7 +352,7 @@ module.exports = function (grunt) {
       'clean:server',
       'concurrent:server',
       'autoprefixer',
-      'connect:livereload',
+      'express:livereload',
       'open',
       'watch'
     ]);
