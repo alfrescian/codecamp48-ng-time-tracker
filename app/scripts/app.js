@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('fireTimeTracker', ['ngRoute', 'firebase'])
+angular.module('fireTimeTracker', ['ngRoute', 'firebase', 'ngResource'])
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
