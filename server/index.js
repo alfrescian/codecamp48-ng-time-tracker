@@ -129,6 +129,9 @@ app.get('/time-track', auth, function(req, res) {
 app.get('/administration', auth, function(req, res) {
 	res.sendfile('index.html', {root:'./app'});
 });
+app.get('/export', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
 
 app.post('/login/:user', function(req, res) {
 	req.session.username = req.params.user;
