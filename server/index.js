@@ -1,9 +1,12 @@
 var express = require('express');
 var app = express();
+var https = require('https');
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var neo4j = require('neo4j');
 var when = require('when');
+
+var config = require('../config');
 
 var path = require('path');
 
@@ -49,13 +52,10 @@ io.sockets.on('connection', function(socket) {
 });
 
 // routes
-app.get('/history', function(req, res) {
-	res.sendfile("index.html", {root: "./app"});
-});
 app.get('/bookings', auth, function(req, res) {
 	req.session.userNode.getRelationships("HAS_BOOKING", function(err, results) {
 		handleGet(err, results, function(data) {
-			res.send(data);
+			extractAndSend(res, data);
 		}, function(err) {
 			res.send(500);
 		});
@@ -64,7 +64,7 @@ app.get('/bookings', auth, function(req, res) {
 app.get('/tasks', auth, function(req, res) {
 	req.session.userNode.getRelationships("HAS_TASK", function(err, results) {
 		handleGet(err, results, function(data) {
-			res.send(data);
+			extractAndSend(res, data);
 		}, function(err) {
 			res.send(500);
 		});
@@ -78,7 +78,7 @@ app.get('/project/:project/tasks', auth, function(req, res) {
 		}
 		projectNode.getRelationships("HAS_TASK", function(err, results) {
 			handleGet(err, results, function(data) {
-				res.send(data);
+				extractAndSend(res, data);
 			}, function(err) {
 				res.send(500);
 			});
@@ -88,7 +88,7 @@ app.get('/project/:project/tasks', auth, function(req, res) {
 app.get('/projects', auth, function(req, res) {
 	req.session.userNode.getRelationships("HAS_PROJECT", function(err, results) {
 		handleGet(err, results, function(data) {
-			res.send(data);
+			extractAndSend(res, data);
 		}, function(err) {
 			res.send(500);
 		});
@@ -103,7 +103,7 @@ app.get('/customer/:customer/projects', auth, function(req, res) {
 
 		customerNode.getRelationships("HAS_PROJECT", function(err, results) {
 			handleGet(err, results, function(data) {
-				res.send(data);
+				extractAndSend(res, data);
 			}, function(err) {
 				res.send(500);
 			});
@@ -113,7 +113,7 @@ app.get('/customer/:customer/projects', auth, function(req, res) {
 app.get('/customers', auth, function(req, res) {
 	req.session.userNode.getRelationships("WORKS_FOR", function(err, results) {
 		handleGet(err, results, function(data) {
-			res.send(data);
+			extractAndSend(res, data);
 		}, function(err) {
 			res.send(500);
 		});
@@ -127,6 +127,9 @@ app.get('/time-track', auth, function(req, res) {
 	res.sendfile('index.html', {root:'./app'});
 });
 app.get('/administration', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
+app.get('/export', auth, function(req, res) {
 	res.sendfile('index.html', {root:'./app'});
 });
 
@@ -222,7 +225,6 @@ app.post('/project/:project/task', auth, function(req, res) {
 	}
 
 	db.createNode(data).save(function(err, taskNode) {
-		console.log(err);
 		if (err) { res.send(500); }
 		else {
 			db.getNodeById(req.params.project, function(err, projectNode) {
@@ -261,16 +263,42 @@ app.put('/booking/:booking', auth, function(req, res) {
 	});
 });
 
-app.get('/history', auth, function(req, res) {
-	res.sendfile('index.html', {root:'./app'});
+// login stuff
+app.post('/login/:user', function(req, res) {
+	req.session.username = req.params.user;
+	//TODO findUser(req.session.username);
 });
-app.get('/time-tracking', auth, function(req, res) {
-	res.sendfile('index.html', {root:'./app'});
-});
-app.get('/administration', auth, function(req, res) {
-	res.sendfile('index.html', {root:'./app'});
-});
+/*app.get('/oauth2callback', function(req, res) {
+	if (req.body.access_token) {
+		console.log("HOOORAII!!", req.body);
+		return;
+	}
 
+	var data = "code=" + req.query.code +
+		"&client_id=" + config.clientId +
+		"&client_secret=" + config.secret + 
+		"&redirect_uri=" + config.oauthRedirectUri + 
+		"&grant_type=authorization_token";
+
+	var r = https.request({
+		host: 'accounts.google.com',
+		port: 443,
+		path: '/o/oauth2/token',
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'Content-Length': data.length
+		}
+	}, function(result) {
+		console.log("HOORRAI:", result);
+		res.send();
+	});
+	r.write(data);
+	r.end();
+});
+app.get('/test', function(req, res) {
+	res.sendfile('test.html', {root: './app'});
+});*/
 
 // grunt specifics
 exports = module.exports = server;
@@ -303,7 +331,7 @@ function handleGet(err, results, successCallback, errorCallback) {
 				promises.push(deferred.promise);
 				db.getNodeById(results[i].end.id, function(err, node) {
 					if (err) { deferred.reject(err); }
-					else { deferred.resolve(node.data); }
+					else { deferred.resolve(node); }
 				});
 			})();
 		}
@@ -311,3 +339,10 @@ function handleGet(err, results, successCallback, errorCallback) {
 	}
 }
 
+function extractAndSend(res, data) {
+	var list = [];
+	for (var i in data) {
+		list.push({data: data[i].data, id: data[i].id});
+	}
+	res.send(list);
+}

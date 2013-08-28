@@ -14,7 +14,8 @@ angular.module('fireTimeTracker')
     return dateFormat(input);
     })
     .controller('ExportCtrl', function ($scope, exportService, $log) {
-        $scope.tasks = exportService.getTasks()
+        $scope.tasks = exportService.getTasks();
+
         $scope.taskColumns = [
             { visible: true, name: "Customer", getValue: function(task) {return task.project.customer.name} },
             { visible: true, name: "Project", getValue: function(task) {return task.project.name} },
@@ -22,15 +23,31 @@ angular.module('fireTimeTracker')
             { visible: true, name: "Task Description", getValue: function(task) {return task.description} },
             { visible: true, name: "Task Duration", getValue: function(task) {return durationFormat(task.duration)} },
         ];
-        $scope.exportCsv = function() {
-            exportToCsv($scope, 'export.csv')
-        };
 
-        $scope.visibleColumns = function(){
-            return $scope.taskColumns.filter(function(col) { return col.visible} )
+        $scope.selectedFilterColumn = $scope.taskColumns[0]
+        $scope.setSelectedFilterColumn = function(col){
+            $scope.selectedFilterColumn = col;
         }
 
-        function exportToCsv($scope, filename) {
+        $scope.matchFilter = function(task) {
+            var value = $scope.selectedFilterColumn.getValue(task);
+
+            if (value && $scope.filterText) {
+                return value.contains($scope.filterText);
+            }
+
+            return true;
+        }
+
+        $scope.exportCsv = function() {
+            exportToCsv($scope, 'export.csv');
+        }
+
+        $scope.visibleColumns = function(){
+            return $scope.taskColumns.filter(function(col) { return col.visible} );
+        }
+
+        exportToCsv = function($scope, filename) {
 
             var colDelim = ';';
             var rowDelim = '\r\n';
@@ -62,5 +79,5 @@ angular.module('fireTimeTracker')
 
             var csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
             var newWindow=window.open(csvData, 'export.csv');
-        };
+        }
     })
