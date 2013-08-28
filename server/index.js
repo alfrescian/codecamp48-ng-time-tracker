@@ -54,7 +54,7 @@ io.sockets.on('connection', function(socket) {
 
 // routes
 app.get('/api/booking/:id?', auth, function(req, res) {
-	req.session.userNode.getRelationships("HAS_BOOKING", function(err, results) {
+	req.session.userNode.getRelationships("BOOKED", function(err, results) {
 		handleGet(err, results, function(data) {
 			extractAndSend(res, data, req.params.id);
 		}, function(err) {
@@ -62,8 +62,36 @@ app.get('/api/booking/:id?', auth, function(req, res) {
 		});
 	});
 });
+/*app.get('/api/booking+task/:bookingId?', auth, function(req, res) {
+	var promises;
+	req.session.userNode.getRelationships("HAS_BOOKING", function(err, results) {
+		promises = [];
+		for (var i in results) {
+			(function() {
+				var deferred = when.defer();
+				promises.push(deferred.promise);
+				db.getNodeById(results[i].end.id, function(err, node) {
+					if (err) { deferred.reject(err); }
+					else { deferred.resolve(node); }
+				});
+			})();
+		}
+		when.all(promises).then(function(bookings) {
+		}, function(err) {
+			promises = [];
+			for (var i in bookings) {
+				(function() {
+					var deferred = when.defer();
+					promises.push(deferred.promise);
+				})();
+			}
+			when.all(promises)
+			res.send(500);
+		});
+	});
+});*/
 app.get('/api/task/:id?', auth, function(req, res) {
-	req.session.userNode.getRelationships("HAS_TASK", function(err, results) {
+	req.session.userNode.getRelationships("WORKS_ON", function(err, results) {
 		handleGet(err, results, function(data) {
 			extractAndSend(res, data, req.params.id);
 		}, function(err) {
@@ -87,7 +115,7 @@ app.get('/api/project/:project/task/:id?', auth, function(req, res) {
 	});
 });
 app.get('/api/project/:id?', auth, function(req, res) {
-	req.session.userNode.getRelationships("HAS_PROJECT", function(err, results) {
+	req.session.userNode.getRelationships("WORKS_IN", function(err, results) {
 		handleGet(err, results, function(data) {
 			extractAndSend(res, data, req.params.id);
 		}, function(err) {
@@ -158,7 +186,7 @@ app.post('/api/booking', auth, function(req, res) {
 	db.createNode(data).save(function(err, bookingNode) {
 		if (err) { res.send(500, err); }
 		else {
-            bookingNode.createRelationshipFrom(req.session.userNode, "HAS_BOOKING", {}, function(err, rel) {
+            bookingNode.createRelationshipFrom(req.session.userNode, "BOOKED", {}, function(err, rel) {
                 if (err) { res.send(500, err); }
                 else { console.log(bookingNode); res.send( {data: bookingNode.data, id: bookingNode.id}); }
             });
@@ -222,7 +250,7 @@ app.post('/api/project/:project/task', auth, function(req, res) {
 					else { deferred1.resolve(rel); }
 				});
 				var deferred2 = when.defer();
-				taskNode.createRelationshipFrom(req.session.userNode, "HAS_TASK", {}, function(err, rel) {
+				taskNode.createRelationshipFrom(req.session.userNode, "WORKS_ON", {}, function(err, rel) {
 					if (err) { deferred2.reject(err); }
 					else { deferred2.resolve(rel); }
 				});
@@ -334,7 +362,6 @@ function handleGet(err, results, successCallback, errorCallback) {
 }
 
 function extractAndSend(res, data, id) {
-	console.log("abc");
 	var found = false;
 	if (id) {
 		for (var i in data) {

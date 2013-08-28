@@ -16,14 +16,14 @@
 	    	<div class="col-md-4 dependency">
 	    		<div class="form-group">
 	    		  <label for="project" class="control-label">Project</label>
-	    		  <select id="project" name="project" class="form-control" required ng-model="selectedProject" ng-options="p.data.name for p in projects"  ng-change="projectSelected()">
+	    		  <select id="project" name="project" ng-disabled="!selectedCustomer" class="form-control" required ng-model="selectedProject" ng-options="p.data.name for p in projects"  ng-change="projectSelected()">
 	    		  </select>
 	    		</div>
 	    	</div>
 	    	<div class="col-md-4 dependency">
 	    		<div class="form-group">
 	    		  <label for="task" class="control-label">Task</label>
-	    		  <select id="task" name="task" class="form-control" required ng-model="selectedTask" ng-options="t.data.description for t in tasks">
+	    		  <select id="task" name="task" ng-disabled="!selectedProject" class="form-control" required ng-model="selectedTask" ng-options="t.data.description for t in tasks">
 	    		  </select>
 	    		</div>
 	    	</div>

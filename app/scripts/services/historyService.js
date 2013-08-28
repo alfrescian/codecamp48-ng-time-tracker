@@ -7,7 +7,11 @@ angular.module('fireTimeTracker')
         if (input.asSeconds() < 60) {
           return  input.format("s") + "s";
         }
-        else return input.format("H") + "h" + input.format("mm") + "m";
+
+        else {
+          var minutes = input.minutes();
+          return input.hours() + "h" + (minutes < 10 ? "0" :"") + minutes + "m";
+        }
       }
     }
 })
