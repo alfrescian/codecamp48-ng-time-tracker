@@ -1,0 +1,46 @@
+        <div class="col-sm-push-2 col-sm-8 tab-pane">
+        	<div class="row">
+        		<div class="col-md-4">
+        			<h3>Customers <small class="sorting"><a href="#"><span class="glyphicon glyphicon-sort"></span></a></small></h3>
+        			<div class="list-group">
+        			  <a href="" ng-repeat="customer in customers" ng-class="{active: customer.id == selectedCustomer}" ng-click="selectCustomer(customer.id)" class="list-group-item">{{customer.name}}</a>
+        			  <div class="list-group-item">
+        			  	<div class="input-group">
+    			  	      <input type="text" class="form-control" placeholder="New Item">
+    			  	      <span class="input-group-btn">
+    			  	        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-plus"></span></button>
+    			  	      </span>
+    			  	    </div>
+        			  </div>
+        			</div>
+        		</div>
+        		<div class="col-md-4">
+        			<h3>Projects <small class="sorting"><a href="#"><span class="glyphicon glyphicon-sort"></span></a></small></h3>
+        			<div class="list-group">
+        			 <a href="" ng-repeat="project in projects" ng-class="{active: project.id == selectedProject}" ng-click="selectProject(project.id)" class="list-group-item">{{project.name}}</a>
+	      			  <div class="list-group-item">
+	      			  	<div class="input-group">
+	  			  	      <input type="text" class="form-control" placeholder="New Item">
+	  			  	      <span class="input-group-btn">
+	  			  	        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-plus"></span></button>
+	  			  	      </span>
+	  			  	    </div>
+	      			  </div>
+        			</div>
+        		</div>
+        		<div class="col-md-4">
+        			<h3>Tasks <small class="sorting"><a href="#"><span class="glyphicon glyphicon-sort"></span></a></small></h3>
+        			<div class="list-group">
+        			 <a href="" ng-repeat="task in tasks" ng-class="{active: task.id == selectedTask}" ng-click="selectTask(task.id)" class="list-group-item">{{task.name}}</a>
+	      			  <div class="list-group-item">
+	      			  	<div class="input-group">
+	  			  	      <input type="text" class="form-control" placeholder="New Item">
+	  			  	      <span class="input-group-btn">
+	  			  	        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-plus"></span></button>
+	  			  	      </span>
+	  			  	    </div>
+	      			  </div>
+        			</div>
+        		</div>
+        	</div>
+        </div>

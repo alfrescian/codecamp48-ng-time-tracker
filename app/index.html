@@ -26,8 +26,35 @@
       <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
 
-    <!-- Add your site or application content here -->
-    <div class="container" ng-view=""></div>
+    <nav class="navbar navbar-default" role="navigation">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Kai Dorschner</a>
+        <p class="navbar-text"> <span class="glyphicon glyphicon-time hidden" id="timeIcon"></span> <span id="time"></span></p>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse navbar-right">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#time-track" data-toggle="tab"><span class="glyphicon glyphicon-time"></span> Timetracking</a></li>
+          <li><a href="#history" data-toggle="tab"><span class="glyphicon glyphicon-calendar"></span> History</a></li>
+          <li><a href="#administration" data-toggle="tab"><span class="glyphicon glyphicon-wrench"></span> Administration</a></li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </nav>
+
+    <article class="container">
+      <div class="row tab-content">
+        <!-- Add your site or application content here -->
+        <div class="container" ng-view=""></div>
+      </div>
+    </article>
 
 	<script src="bower_components/jquery/jquery.js"></script>
 	<script src="bower_components/angular/angular.js"></script>
@@ -45,6 +72,16 @@
 	<!-- build:js({.tmp,app}) scripts/scripts.js -->
 	<script src="scripts/app.js"></script>
 	<script src="scripts/controllers/main.js"></script>
+
+    <script src="scripts/controllers/time-track.js"></script>
+    <script src="scripts/controllers/administration.js"></script>
+    <script src="scripts/controllers/export.js"></script>
+    <script src="scripts/controllers/history.js"></script>
+    <script src="scripts/services/userService.js"></script>
+    <script src="scripts/services/timeTrackService.js"></script>
+    <script src="scripts/services/historyService.js"></script>
+    <script src="scripts/services/administrationService.js"></script>
+    <script src="scripts/services/exportService.js"></script>
 	<!-- endbuild -->
 
 </body>
