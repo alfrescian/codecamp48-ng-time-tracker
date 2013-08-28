@@ -1,9 +1,12 @@
 var express = require('express');
 var app = express();
+var https = require('https');
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var neo4j = require('neo4j');
 var when = require('when');
+
+var config = require('../config');
 
 var path = require('path');
 
@@ -250,10 +253,35 @@ app.post('/login/:user', function(req, res) {
 	req.session.username = req.params.user;
 	//TODO findUser(req.session.username);
 });
-/*app.get('oauth2callback', function(req, res) {
-	console.log("GOT MESSAGE!!!!", req);
+/*app.get('/oauth2callback', function(req, res) {
+	if (req.body.access_token) {
+		console.log("HOOORAII!!", req.body);
+		return;
+	}
+
+	var data = "code=" + req.query.code +
+		"&client_id=" + config.clientId +
+		"&client_secret=" + config.secret + 
+		"&redirect_uri=" + config.oauthRedirectUri + 
+		"&grant_type=authorization_token";
+
+	var r = https.request({
+		host: 'accounts.google.com',
+		port: 443,
+		path: '/o/oauth2/token',
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'Content-Length': data.length
+		}
+	}, function(result) {
+		console.log("HOORRAI:", result);
+		res.send();
+	});
+	r.write(data);
+	r.end();
 });
-app.get('test', function(req, res) {
+app.get('/test', function(req, res) {
 	res.sendfile('test.html', {root: './app'});
 });*/
 
