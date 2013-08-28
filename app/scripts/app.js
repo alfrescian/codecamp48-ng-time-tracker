@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('fireTimeTracker', ['ngRoute', 'firebase'])
+angular.module('fireTimeTracker', ['ngRoute', 'firebase','ngResource'])
   .config(function ($routeProvider, $locationProvider) {
     $locationProvider.html5Mode(true);
     $routeProvider
@@ -20,8 +20,8 @@ angular.module('fireTimeTracker', ['ngRoute', 'firebase'])
         controller: 'AdministrationCtrl'
       })
       .when('/export', {
-            templateUrl: 'views/export.html',
-            controller: 'ExportCtrl'
+        templateUrl: 'views/export.html',
+        controller: 'ExportCtrl'
       })
       .when('/history', {
         templateUrl: 'views/history.html',

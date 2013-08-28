@@ -7,13 +7,13 @@
 	<div class="col-sm-8">
 		<div ng-repeat="entry in entries">
 			<h2 id="{{entry.day}}">{{entry.day | date:'MMM d, y'}} <small>{{entry.duration | dynamicDuration}}</small></h2>
-			<div class="list-group" ng-repeat="task in entry.tasks">
+			<div class="list-group" ng-repeat="booking in entry.bookings">
 				<a href="#" class="list-group-item">
-					<h4 class="list-group-item-heading">{{task.name}}
-						<span class="label label-success">{{task.duration | dynamicDuration}}</span>
-						<small>{{task.start | date:'HH:mm:ss'}} - {{task.end | date:'HH:mm:ss'}}</small>
+					<h4 class="list-group-item-heading">{{booking.name}}
+						<span class="label label-success">{{booking.duration | dynamicDuration}}</span>
+						<small>{{booking.start | date:'HH:mm:ss'}} - {{booking.end | date:'HH:mm:ss'}}</small>
 					</h4>
-					<blockquote class="list-group-item-text">{{task.comment}}</blockquote>
+					<blockquote class="list-group-item-text">{{booking.description}}</blockquote>
 				</a>
 			</div>
 		</div>

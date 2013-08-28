@@ -24,19 +24,29 @@ angular.module('fireTimeTracker')
             { visible: true, name: "Task Duration", getValue: function(task) {return durationFormat(task.duration)} },
         ];
 
+        /*
         $scope.selectedFilterColumn = $scope.taskColumns[0]
         $scope.setSelectedFilterColumn = function(col){
             $scope.selectedFilterColumn = col;
-        }
+        }*/
 
         $scope.matchFilter = function(task) {
-            var value = $scope.selectedFilterColumn.getValue(task);
 
-            if (value && $scope.filterText) {
-                return value.contains($scope.filterText);
+            var result = false;
+            // do not filter if filter condition is not valid
+            if (!$scope.filterText){
+                return true;
             }
 
-            return true;
+            $scope.visibleColumns().map(function(col){
+                var value = col.getValue(task);
+
+                if (value && value.toLowerCase().contains($scope.filterText.toLowerCase())) {
+                    result = true
+                }
+            });
+
+            return result;
         }
 
         $scope.exportCsv = function() {
@@ -66,15 +76,17 @@ angular.module('fireTimeTracker')
 
             // write data
             $scope.tasks.map(function(task){
-                $scope.taskColumns.map(function(col){
-                    if (col.visible){
-                        try{
-                            csv += quote(col.getValue(task)) + colDelim;
-                        }catch(ex){
-                            csv += quote("error") + colDelim;
+                if ($scope.matchFilter(task)){
+                    $scope.taskColumns.map(function(col){
+                        if (col.visible){
+                            try{
+                                csv += quote(col.getValue(task)) + colDelim;
+                            }catch(ex){
+                                csv += quote("error") + colDelim;
+                            };
                         };
-                    };
-                });
+                    });
+                }
             })
 
             var csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
