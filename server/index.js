@@ -52,9 +52,6 @@ io.sockets.on('connection', function(socket) {
 });
 
 // routes
-app.get('/history', function(req, res) {
-	res.sendfile("index.html", {root: "./app"});
-});
 app.get('/bookings', auth, function(req, res) {
 	req.session.userNode.getRelationships("HAS_BOOKING", function(err, results) {
 		handleGet(err, results, function(data) {
@@ -121,6 +118,24 @@ app.get('/customers', auth, function(req, res) {
 			res.send(500);
 		});
 	});
+});
+
+app.get('/history', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
+app.get('/time-track', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
+app.get('/administration', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
+app.get('/export', auth, function(req, res) {
+	res.sendfile('index.html', {root:'./app'});
+});
+
+app.post('/login/:user', function(req, res) {
+	req.session.username = req.params.user;
+	//TODO findUser(req.session.username);
 });
 
 app.post('/createUser', function(req, res) {
