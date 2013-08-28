@@ -49,6 +49,9 @@ io.sockets.on('connection', function(socket) {
 });
 
 // routes
+app.get('/history', function(req, res) {
+	res.sendfile("index.html", {root: "./app"});
+});
 app.get('/user/:user/bookings', auth, function(req, res) {
 	req.session.userNode.getRelationships("HAS_BOOKING", function(err, results) {
 		handleGet(err, results, function(data) {
@@ -73,6 +76,17 @@ app.get('/user/:user/projects', auth, function(req, res) {
 			res.send(data);
 		}, function(err) {
 			res.send(500);
+		});
+	});
+});
+app.get('/user/:user/customer/:customer/projects', auth, function(req, res) {
+	db.getNodeById(req.params.customer, function(err, customerNode) {
+		customerNode.getRelationships("HAS_PROJECT", function(err, results) {
+			handleGet(err, results, function(data) {
+				res.send(data);
+			}, function(err) {
+				res.send(500);
+			});
 		});
 	});
 });
