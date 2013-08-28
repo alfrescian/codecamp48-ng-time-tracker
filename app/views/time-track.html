@@ -9,31 +9,21 @@
 	    	<div class="col-md-4 dependency">
 	    		<div class="form-group">
 	    		  <label for="customer" class="control-label">Customer</label>
-	    		  <select id="customer" name="customer" class="form-control" required>
-	    		    <option value="">Please Choose</option>
-	    		    <option value="1">Micromata</option>
-	    		    <option value="1">Glinicke</option>
-	    		    <option value="1">Hochschule Harz</option>
+	    		  <select id="customer" name="customer" class="form-control" required ng-model="selectedCustomer" ng-options="c.data.name for c in customers" ng-change="customerSelected()">
 	    		  </select>
 	    		</div>
 	    	</div>
 	    	<div class="col-md-4 dependency">
 	    		<div class="form-group">
 	    		  <label for="project" class="control-label">Project</label>
-	    		  <select id="project" name="project" class="form-control" required>
-	    		    <option value="">Please choose</option>
-	    		    <option value="1">Website</option>
-	    		    <option value="1">Intranet</option>
+	    		  <select id="project" name="project" class="form-control" required ng-model="selectedProject" ng-options="p.data.name for p in projects"  ng-change="projectSelected()">
 	    		  </select>
 	    		</div>
 	    	</div>
 	    	<div class="col-md-4 dependency">
 	    		<div class="form-group">
 	    		  <label for="task" class="control-label">Task</label>
-	    		  <select id="task" name="task" class="form-control" required>
-	    		    <option value="">Please choose</option>
-	    		    <option value="1">Fehler im Header (2.004.1)</option>
-	    		    <option value="1">Footer falsch dargestellt (2.004.2)</option>
+	    		  <select id="task" name="task" class="form-control" required ng-model="selectedTask" ng-options="t.data.description for t in tasks">
 	    		  </select>
 	    		</div>
 	    	</div>
