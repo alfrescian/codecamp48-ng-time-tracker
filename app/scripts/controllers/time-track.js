@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('fireTimeTracker')
-  .controller('TimeTrackCtrl', function ($scope, customerService, projectService, taskService, bookingService, $log) {
+  .controller('TimeTrackCtrl', function ($scope, customerService, projectService, taskService, bookingService, $log, $rootScope) {
     $scope.customers = customerService.get();
 	$scope.projects = [];
 	$scope.tasks = [];
@@ -23,13 +23,22 @@ angular.module('fireTimeTracker')
 		$log.log("start()");
 		$log.log($scope.comment);
 		$scope.started = true;
-		bookingService.create({});
+		var id = bookingService.create({}).$promise.then(function (resp){
+            $rootScope.currentBooking = resp.id;
+			$rootScope.startTime = resp.data.start;
+        },
+        function (error){
+            $log.log(error);
+        }); 
 	}
 
 	$scope.stop = function() {
-		$log.log("stop()");
-
-		
+		$log.log("stop() booking " + $rootScope.currentBooking);
+		bookingService.update({bookingId: $rootScope.currentBooking}, { description: $scope.comment, task : $scope.selectedTask.id })
+		.$promise.then(function (resp){
+			$scope.started = false;
+			$rootScope.startTime = null;
+        });
 	}
 
   });

@@ -29,7 +29,7 @@
 	    	</div>
 	    </div>
 	    <button id="startTracking" ng-if="!started" type="submit" class="btn btn-block btn-lg btn-primary" title="Start" ng-click="start()"><span class="glyphicon glyphicon-play"></span></button>
-	    <button id="stopTracking" ng-if="started" type="submit" class="btn btn-block btn-lg btn-danger" title="Stop" ng-click="stop()"><span class="glyphicon glyphicon-stop"></span></button>
+	    <button id="stopTracking" ng-disabled="!selectedTask || !comment" ng-if="started" type="submit" class="btn btn-block btn-lg btn-danger" title="Stop" ng-click="stop()"><span class="glyphicon glyphicon-stop"></span></button>
 
 	  </form>
 	</div>
