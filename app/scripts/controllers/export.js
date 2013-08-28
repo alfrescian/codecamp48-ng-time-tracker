@@ -3,7 +3,7 @@ var dateFormat = function(datetime){
 };
 
 var durationFormat = function(datetimeStart, datetimeEnd){
-    return new moment(datetimeEnd).subtract(datetimeStart);
+    return Math.round((new Date() - datetimeStart) / (1000*60*60), 0) + " min";
 };
 
 angular.module('fireTimeTracker')
@@ -12,30 +12,27 @@ angular.module('fireTimeTracker')
     })
     .controller('ExportCtrl', function ($scope, angularFireCollection, $log) {
         var url = 'https://alfrescian.firebaseio.com/tracks';
-        $scope.tracks = angularFireCollection(url);
-        $scope.columns = [
-            { visible: true, name: "User Name", getValue: function(track) {return track.user.userName} },
-            { visible: true, name: "Description", getValue: function(track) {return track.description} },
-            { visible: true, name: "Project", getValue: function(track) {return track.user.userName} },
-            { visible: true, name: "Customer", getValue: function(track) {return track.description} },
-            { visible: true, name: "ProjectStatus", getValue: function(track) {return dateFormat(track.started)} },
-            { visible: true, name: "TaskStatus", getValue: function(track) {return dateFormat(track.started)} },
-            { visible: true, name: "TaskDescription", getValue: function(track) {return dateFormat(track.started)} },
-            { visible: true, name: "Task Start Time", getValue: function(track) {return dateFormat(track.started)} },
-            { visible: true, name: "Task End Time", getValue: function(track) {return dateFormat(track.ended)} },
-            { visible: true, name: "Task Duration", getValue: function(track) {return durationFormat(track.started, track.ended)} },
-            { visible: true, name: "BookingDescription", getValue: function(track) {return dateFormat(track.started)} },
-            { visible: true, name: "BookingDuration", getValue: function(track) {return dateFormat(track.started)} },
+        $scope.tasks = angularFireCollection(url);
+        $scope.taskColumns = [
+            { visible: false, name: "User Name", getValue: function(tasks) {return tasks.user.userName} },
+            { visible: true, name: "Customer", getValue: function(tasks) {return tasks.customer.name} },
+            { visible: true, name: "Project", getValue: function(tasks) {return tasks.project.userName} },
+            { visible: true, name: "Project Status", getValue: function(tasks) {return dateFormat(tasks.project.status)} },
+            { visible: true, name: "Task Description", getValue: function(tasks) {return tasks.description} },
+            { visible: true, name: "Task Status", getValue: function(tasks) {return dateFormat(tasks.status)} },
+            { visible: true, name: "Task Start Time", getValue: function(tasks) {return dateFormat(tasks.started)} },
+            { visible: true, name: "Task End Time", getValue: function(tasks) {return dateFormat(tasks.ended)} },
+            { visible: true, name: "Task Duration", getValue: function(tasks) {return durationFormat(tasks.started, tasks.ended)} },
         ];
         $scope.exportCsv = function() {
-            exportTableToCSV($scope, 'export.csv')
+            exportToCSV($scope, 'export.csv')
         };
 
         $scope.visibleColumns = function(){
-            return $scope.columns.filter(function(col) { return col.visible} )
+            return $scope.taskColumns.filter(function(col) { return col.visible} )
         }
 
-        function exportTableToCSV($scope, filename) {
+        function exportToCSV($scope, filename) {
 
             var colDelim = ';';
             var rowDelim = '\r\n';
@@ -53,10 +50,14 @@ angular.module('fireTimeTracker')
             csv += rowDelim;
 
             // write data
-            $scope.tracks.map(function(track){
+            $scope.taskss.map(function(tasks){
                 $scope.columns.map(function(col){
                     if (col.visible){
-                        csv += quote(col.getValue(track)) + colDelim;
+                        try{
+                            csv += quote(col.getValue(tasks)) + colDelim;
+                        }catch(ex){
+                            csv += quote("error") + colDelim;
+                        };
                     };
                 });
             })
