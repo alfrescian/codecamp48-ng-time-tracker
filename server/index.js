@@ -7,7 +7,7 @@ var when = require('when');
 
 var path = require('path');
 
-var db = new neo4j.GraphDatabase('http://localhost:7474');
+var db = new neo4j.GraphDatabase('http://192.168.200.197:7474');
 
 // all environments
 app.use(express.logger('dev'));
@@ -52,7 +52,7 @@ io.sockets.on('connection', function(socket) {
 app.get('/history', function(req, res) {
 	res.sendfile("index.html", {root: "./app"});
 });
-app.get('/user/:user/bookings', auth, function(req, res) {
+app.get('/bookings', auth, function(req, res) {
 	req.session.userNode.getRelationships("HAS_BOOKING", function(err, results) {
 		handleGet(err, results, function(data) {
 			res.send(data);
@@ -61,7 +61,7 @@ app.get('/user/:user/bookings', auth, function(req, res) {
 		});
 	});
 });
-app.get('/user/:user/tasks', auth, function(req, res) {
+app.get('/tasks', auth, function(req, res) {
 	req.session.userNode.getRelationships("HAS_TASK", function(err, results) {
 		handleGet(err, results, function(data) {
 			res.send(data);
@@ -70,7 +70,22 @@ app.get('/user/:user/tasks', auth, function(req, res) {
 		});
 	});
 });
-app.get('/user/:user/projects', auth, function(req, res) {
+app.get('/project/:project/tasks', auth, function(req, res) {
+	db.getNodeById(req.params.project, function(err, projectNode) {
+		if (err) {
+			res.send(500);
+			return;
+		}
+		projectNode.getRelationships("HAS_TASK", function(err, results) {
+			handleGet(err, results, function(data) {
+				res.send(data);
+			}, function(err) {
+				res.send(500);
+			});
+		});
+	});
+});
+app.get('/projects', auth, function(req, res) {
 	req.session.userNode.getRelationships("HAS_PROJECT", function(err, results) {
 		handleGet(err, results, function(data) {
 			res.send(data);
@@ -79,8 +94,13 @@ app.get('/user/:user/projects', auth, function(req, res) {
 		});
 	});
 });
-app.get('/user/:user/customer/:customer/projects', auth, function(req, res) {
+app.get('/customer/:customer/projects', auth, function(req, res) {
 	db.getNodeById(req.params.customer, function(err, customerNode) {
+		if (err) {
+			res.send(500);
+			return;
+		}
+
 		customerNode.getRelationships("HAS_PROJECT", function(err, results) {
 			handleGet(err, results, function(data) {
 				res.send(data);
@@ -90,7 +110,7 @@ app.get('/user/:user/customer/:customer/projects', auth, function(req, res) {
 		});
 	});
 });
-app.get('/user/:user/customers', auth, function(req, res) {
+app.get('/customers', auth, function(req, res) {
 	req.session.userNode.getRelationships("WORKS_FOR", function(err, results) {
 		handleGet(err, results, function(data) {
 			res.send(data);
@@ -113,7 +133,7 @@ app.post('/createUser', function(req, res) {
 });
 
 // query to create BOOKING -> name, start[, end]
-app.post('/user/:user/task/:task/booking', auth, function(req, res) {
+app.post('/task/:task/booking', auth, function(req, res) {
 	var data = {
 		description: req.body.description,
 		start: req.body.start
@@ -145,7 +165,7 @@ app.post('/user/:user/task/:task/booking', auth, function(req, res) {
 	});
 });
 // query to create CUSTOMER -> name
-app.post('/user/:user/customer', auth, function(req, res) {
+app.post('/customer', auth, function(req, res) {
 	db.createNode({name: req.body.name}).save(function(err, customerNode) {
 		if (err) { res.send(500); }
 		else {
@@ -157,7 +177,7 @@ app.post('/user/:user/customer', auth, function(req, res) {
 	});
 });
 // query to create PROJECT -> name, estimatedTime
-app.post('/user/:user/customer/:customer/project', auth, function(req, res) {
+app.post('/customer/:customer/project', auth, function(req, res) {
 	var data = { name: req.body.name };
 	if (req.body.estimatedTime)
 		data.estimatedTime = req.body.estimatedTime;
@@ -185,7 +205,7 @@ app.post('/user/:user/customer/:customer/project', auth, function(req, res) {
 	});
 });
 // query to create TASK -> description, estimatedTime
-app.post('/user/:user/project/:project/task', auth, function(req, res) {
+app.post('/project/:project/task', auth, function(req, res) {
 	var data = { description: req.body.description };
 	if (req.body.estimatedTime) {
 		data.estimatedTime = req.body.estimatedTime;
@@ -216,7 +236,19 @@ app.post('/user/:user/project/:project/task', auth, function(req, res) {
 	});
 });
 
-app.put('/update/:user/:booking', auth, function(req, res) {
+app.put('/booking/:booking', auth, function(req, res) {
+	db.getNodeById(req.params.booking, function(err, bookingNode) {
+		if (err) {
+			res.send(500);
+			return;
+		}
+
+		bookingNode.data.end = req.body.end;
+		bookingNode.save(function(err, node) {
+			if (err) res.send(500);
+			else res.send();
+		});
+	});
 });
 
 // grunt specifics
