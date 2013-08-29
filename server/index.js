@@ -7,23 +7,51 @@ var neo4j = require('neo4j');
 var when = require('when');
 var requestify = require('requestify');
 
-var config = require('../config');
+// Config
+//
+// if you want to supply your own, just put a config.js on project root level
+// filled with
+// module.exports = {
+//    myOptions: "option"
+// };
+// currently available options are (example values are the default values too):
+// neo4j : { host: "http://localhost", port: 7474 },
+// cookieSecret: "my-secret", // /!\ make sure to override this one! (once we have sessions)
+// debug: true, // you can alternatively supply the env variable for express
+// username: 'user' // the username property value of the default user you have to create currently
+//                  // /!\ this one is most important. Without a user nothing works.
+//
+
+var config;
+try {
+	config = require('../config');
+} catch (e) {
+	config =  {};
+}
+// provide some default values for the config to hopefully keep things running
+config.neo4j = config.neo4j || {};
+config.neo4j.host = config.neo4j.host || 'http://localhost';
+config.neo4j.port = config.neo4j.port || 7474;
+config.cookieSecret = config.cookieSecret || 'my-secret';
+config.debug = config.debug || true;
+config.username = config.username || 'user';
+console.log(config.username);
 
 var path = require('path');
 
-var db = new neo4j.GraphDatabase('http://192.168.200.197:7474');
+var db = new neo4j.GraphDatabase(config.neo4j.host + ':' + config.neo4j.port);
 
 // all environments
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-app.use(express.cookieParser('akj13i$q@2d'));
+app.use(express.cookieParser(config.cookieSecret));
 app.use(express.session());
 app.use(app.router);
 app.use(express.static('../' + __dirname + '/app'));
 
 // development only
-if ('development' == app.get('env')) {
+if (config.debug || 'development' == app.get('env')) {
 	app.use(express.errorHandler());
 }
 
@@ -39,7 +67,7 @@ function auth(req, res, next) {
 		return;
 	}
 
-	findUser("tom95", function(err, node) {
+	findUser(config.username, function(err, node) {
 		if (err) {
 			res.send(500, "No user defined!!!" + err);
 		} else {
