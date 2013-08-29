@@ -41,6 +41,7 @@ angular.module('fireTimeTracker')
         $.each(result, function(i, value) {
           days.push(value);
         });
+		days.reverse();
 
         // calculate durations for each task and for the whole day
         $.each(days, function(i, value) {
