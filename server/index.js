@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var https = require('https');
 var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
+// var io = require('socket.io').listen(server);
 var neo4j = require('neo4j');
 var when = require('when');
 var requestify = require('requestify');
@@ -77,8 +77,8 @@ function auth(req, res, next) {
 	});
 }
 
-io.sockets.on('connection', function(socket) {
-});
+/* io.sockets.on('connection', function(socket) {
+}); */
 
 // routes
 app.get('/api/booking/:id?', auth, function(req, res) {
